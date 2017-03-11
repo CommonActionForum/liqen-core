@@ -16,7 +16,7 @@ defmodule Core.Router do
   scope "/", Core do
     pipe_through :api
 
-    get "/", PageController, :index
+    resources "/users", UserController, only: [:create]
   end
 
   # Other scopes may use custom stacks.
