@@ -14,7 +14,7 @@ defmodule Core.Router do
   end
 
   scope "/", Core do
-    pipe_through :browser # Use the default browser stack
+    pipe_through :api
 
     get "/", PageController, :index
   end
