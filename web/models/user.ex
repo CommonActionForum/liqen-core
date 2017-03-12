@@ -4,6 +4,7 @@ defmodule Core.User do
   schema "users" do
     field :email, :string
     field :crypted_password, :string
+    field :password, :string, virtual: true
 
     timestamps()
   end
@@ -13,8 +14,19 @@ defmodule Core.User do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:email, :crypted_password])
-    |> validate_required([:email, :crypted_password])
+    |> cast(params, [:email, :password])
+    |> validate_required([:email, :password])
     |> unique_constraint(:email)
+    |> put_pass_hash()
+  end
+
+  defp put_pass_hash(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
+        put_change(changeset, :crypted_password, Comeonin.Bcrypt.hashpwsalt(pass))
+
+      _ ->
+        changeset
+    end
   end
 end

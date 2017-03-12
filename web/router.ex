@@ -11,12 +11,16 @@ defmodule Core.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Guardian.Plug.VerifyHeader, realm: "Bearer"
+    plug Guardian.Plug.LoadResource
   end
 
   scope "/", Core do
-    pipe_through :browser # Use the default browser stack
+    pipe_through :api
 
-    get "/", PageController, :index
+    resources "/users", UserController, only: [:create]
+    resources "/sessions", SessionController, only: [:create, :delete]
+    get "private", PrivateController, :example
   end
 
   # Other scopes may use custom stacks.
