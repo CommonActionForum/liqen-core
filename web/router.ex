@@ -11,6 +11,7 @@ defmodule Core.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Core.Auth, repo: Core.Repo
   end
 
   scope "/", Core do
