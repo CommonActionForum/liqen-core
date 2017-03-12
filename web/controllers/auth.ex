@@ -12,10 +12,16 @@ defmodule Core.Auth do
   Load the User object of a person with active session
   """
   def call(conn, repo) do
-    access_token = get_req_header(conn, "Authorization")
+    access_token = get_req_header(conn, "authorization")
+    IO.puts(access_token)
 
-    user = repo.get(User, 5)
-    assign(conn, :current_user, user)
+    case access_token do
+      "12345" ->
+        user = repo.get(User, 5)
+        assign(conn, :current_user, user)
+      _ ->
+        assign(conn, :current_user, nil)
+    end
   end
 
   @doc """
