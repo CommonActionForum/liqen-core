@@ -17,6 +17,7 @@ defmodule Core.Router do
     pipe_through :api
 
     resources "/users", UserController, only: [:create]
+    resources "/sessions", SessionController, only: [:create, :delete]
   end
 
   # Other scopes may use custom stacks.
