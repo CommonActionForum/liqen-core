@@ -20,6 +20,7 @@ defmodule Core.Router do
 
     resources "/users", UserController, only: [:create]
     resources "/sessions", SessionController, only: [:create, :delete]
+    get "private", PrivateController, :example
   end
 
   # Other scopes may use custom stacks.
