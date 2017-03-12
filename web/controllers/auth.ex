@@ -40,11 +40,14 @@ defmodule Core.Auth do
   end
 
   defp create_session(conn, user) do
+    new_conn = Guardian.Plug.api_sign_in(conn, user)
+
     session = %{
-      access_token: "12345",
-      token_type: "Bearer",
-      expires_in: 3600*24*60
+      user: user,
+      jwt: Guardian.Plug.current_token(new_conn),
+      exp: Guardian.Plug.claims(new_conn) |> Map.get("exp")
     }
+
     conn
     |> assign(:current_session, session)
   end
