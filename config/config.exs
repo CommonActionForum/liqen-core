@@ -29,12 +29,10 @@ config :guardian, Guardian,
   ttl: { 30, :days },
   allowed_drift: 2000,
   verify_issuer: true,
-  secret_key: %{"alg" => "ES512", "crv" => "P-521",
-                "d" => "ATUHSE9CfgNnQshfcxP8RZLmFPqHC8Wuocxwfs6DZYLB1GvKQ3M0i3PKkfCejtsTJ_Xbj_F6wVb5ob9a_8vM6v22",
-                "kty" => "EC", "use" => "sig",
-                "x" => "AR7X_sDJSljrkaCvrsC6c2ND744EvHzYPG-izN05tvWnhBt8f0lILsK_J16Vx70nO5Dzm7xA8LL82fsCzkbYqEVE",
-                "y" => "AVftR96nyPfF_s4MCMXswxnuL-PqK9y0LMRw745TPPDSb10jRlgbVdz_p-eVz8i1VszkxP7ORbzrD18X3aufc4Bk"},
-  serializer: MyApp.GuardianSerializer
+  secret_key: %{"alg" => "HS512",
+                "k" => "v0GI423FEIyK5HTCerjaGK8W3v0gSd9WkCnG6ExS1WJmWBQmrKaLIATGE72wnpwgrtfTueoobzwiY4LYfyRk_g",
+                "kty" => "oct", "use" => "sig"},
+  serializer: Core.GuardianSerializer
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
