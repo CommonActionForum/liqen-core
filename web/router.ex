@@ -11,7 +11,8 @@ defmodule Core.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
-    plug Core.Auth, repo: Core.Repo
+    plug Guardian.Plug.VerifyHeader, realm: "Bearer"
+    plug Guardian.Plug.LoadResource
   end
 
   scope "/", Core do
