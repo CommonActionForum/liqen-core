@@ -21,7 +21,7 @@ defmodule Core.Router do
     resources "/users", UserController, only: [:create]
     resources "/sessions", SessionController, only: [:create, :delete]
     resources "/tags", TagController, except: [:new, :edit]
-    get "private", PrivateController, :example
+    get "/private", PrivateController, :example
   end
 
   # Other scopes may use custom stacks.
