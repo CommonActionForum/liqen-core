@@ -1,15 +1,19 @@
 defmodule Core.AnnotationController do
   use Core.Web, :controller
-
   alias Core.Annotation
+
+  plug Guardian.Plug.EnsureAuthenticated, handler: Core.Auth
 
   def index(conn, _params) do
     annotations = Repo.all(Annotation)
     render(conn, "index.json", annotations: annotations)
   end
 
-  def create(conn, %{"annotation" => annotation_params}) do
-    changeset = Annotation.changeset(%Annotation{}, annotation_params)
+  def create(conn, params) do
+    user = Guardian.Plug.current_resource(conn)
+    changeset = user
+    |> build_assoc(:annotations)
+    |> Annotation.changeset(params)
 
     case Repo.insert(changeset) do
       {:ok, annotation} ->
