@@ -3,7 +3,7 @@ defmodule Core.Annotation do
 
   schema "annotations" do
     belongs_to :article, Core.Article
-    belongs_to :author, Core.User
+    belongs_to :user, Core.User, foreign_key: :author
 
     timestamps()
   end

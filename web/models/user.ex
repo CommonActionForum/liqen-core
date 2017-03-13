@@ -5,6 +5,7 @@ defmodule Core.User do
     field :email, :string
     field :crypted_password, :string
     field :password, :string, virtual: true
+    has_many :annotations, Core.Annotation, foreign_key: :author
 
     timestamps()
   end

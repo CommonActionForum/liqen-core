@@ -4,6 +4,7 @@ defmodule Core.Article do
   schema "articles" do
     field :title, :string
     field :body, :string
+    has_many :annotations, Core.Annotation
 
     timestamps()
   end
