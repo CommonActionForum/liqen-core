@@ -22,6 +22,6 @@ defmodule Core.SessionController do
     end
   end
 
-  def delete(conn, params) do
+  def delete(_conn, _params) do
   end
 end
