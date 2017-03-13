@@ -1,4 +1,6 @@
 defmodule Core.Auth do
+  use Core.Web, :controller
+
   import Plug.Conn
   import Comeonin.Bcrypt, only: [checkpw: 2]
 
@@ -17,6 +19,15 @@ defmodule Core.Auth do
       true ->
         {:error, :unauthorized, conn}
     end
+  end
+
+  @doc """
+  Handles requests that doesn't pass the authentication/authorization
+  """
+  def unauthenticated(conn, _params) do
+    conn
+    |> put_status(:unauthorized)
+    |> render(Core.ErrorView, "401.json", %{})
   end
 
   defp create_session(conn, user) do

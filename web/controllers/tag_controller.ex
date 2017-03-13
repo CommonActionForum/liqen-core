@@ -1,7 +1,8 @@
 defmodule Core.TagController do
   use Core.Web, :controller
-
   alias Core.Tag
+
+  plug Guardian.Plug.EnsureAuthenticated, handler: Core.Auth
 
   def index(conn, _params) do
     tags = Repo.all(Tag)
