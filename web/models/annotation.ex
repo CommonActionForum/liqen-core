@@ -13,7 +13,8 @@ defmodule Core.Annotation do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [])
-    |> validate_required([])
+    |> cast(params, [:article_id])
+    |> validate_required([:article_id])
+    |> foreign_key_constraint(:article_id)
   end
 end
