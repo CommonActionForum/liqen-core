@@ -7,6 +7,8 @@ defmodule Core.Annotation do
     belongs_to :article, Core.Article
     belongs_to :user, Core.User, foreign_key: :author
 
+    many_to_many :annotation_tags, Core.Tag, join_through: Core.AnnotationTag
+
     timestamps()
   end
 
