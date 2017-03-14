@@ -29,8 +29,15 @@ defmodule Core.AnnotationController do
   end
 
   def show(conn, %{"id" => id}) do
-    annotation = Repo.get!(Annotation, id)
-    render(conn, "show.json", annotation: annotation)
+    case Repo.get(Annotation, id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> render(Core.ErrorView, "404.json", %{})
+      annotation ->
+        conn
+        |> render("show.json", annotation: annotation)
+    end
   end
 
   def update(conn, %{"id" => id, "annotation" => annotation_params}) do
