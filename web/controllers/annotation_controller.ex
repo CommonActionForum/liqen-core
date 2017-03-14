@@ -17,6 +17,8 @@ defmodule Core.AnnotationController do
 
     case Repo.insert(changeset) do
       {:ok, annotation} ->
+        annotation = Repo.preload(annotation, :annotation_tags)
+
         conn
         |> put_status(:created)
         |> put_resp_header("location", annotation_path(conn, :show, annotation))
@@ -35,6 +37,7 @@ defmodule Core.AnnotationController do
         |> put_status(:not_found)
         |> render(Core.ErrorView, "404.json", %{})
       annotation ->
+        annotation = Repo.preload(annotation, :annotation_tags)
         conn
         |> render("show.json", annotation: annotation)
     end

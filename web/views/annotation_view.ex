@@ -17,6 +17,8 @@ defmodule Core.AnnotationView do
 
   def render("annotation.json", %{annotation: annotation}) do
     target = annotation.target
+    tags = Enum.map(annotation.annotation_tags, fn(tag) -> %{id: tag.id,
+                                                             title: tag.title} end)
 
     %{id: annotation.id,
       article_id: annotation.article_id,
@@ -27,6 +29,7 @@ defmodule Core.AnnotationView do
         refinedBy: %{type: "TextQuoteSelector",
                      prefix: target.prefix,
                      exact: target.exact,
-                     suffix: target.suffix}}}
+                     suffix: target.suffix}},
+      tags: tags}
   end
 end
