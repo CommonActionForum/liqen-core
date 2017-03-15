@@ -1,10 +1,10 @@
-defmodule Core.Tag do
+defmodule Core.Article do
   use Core.Web, :model
 
-  schema "tags" do
+  schema "articles" do
     field :title, :string
-
-    many_to_many :annotations, Core.Annotation, join_through: "annotations_tags"
+    field :body, :string
+    has_many :annotations, Core.Annotation
 
     timestamps()
   end
@@ -14,7 +14,7 @@ defmodule Core.Tag do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:title])
-    |> validate_required([:title])
+    |> cast(params, [:title, :body])
+    |> validate_required([:title, :body])
   end
 end

@@ -21,6 +21,12 @@ defmodule Core.Router do
     resources "/users", UserController, only: [:create]
     resources "/sessions", SessionController, only: [:create, :delete]
     resources "/tags", TagController, except: [:new, :edit]
+    resources "/articles", ArticleController, except: [:new, :edit]
+    resources "/annotations", AnnotationController, except: [:new, :edit] do
+      resources "/tags", AnnotationTagController, only: [:create, :delete]
+    end
+    resources "/questions", QuestionController, except: [:new, :edit]
+
     get "/private", PrivateController, :example
   end
 
