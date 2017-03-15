@@ -30,7 +30,7 @@ defmodule Core.ArticleController do
   end
 
   def update(conn, article_params) do
-    article = Repo.get!(Article, article_params.id)
+    article = Repo.get!(Article, article_params["id"])
     changeset = Article.changeset(article, article_params)
 
     case Repo.update(changeset) do

@@ -30,9 +30,9 @@ defmodule Core.TagController do
     render(conn, "show.json", tag: tag)
   end
 
-  def update(conn, %{"id" => id, "tag" => tag_params}) do
+  def update(conn, %{"id" => id, "title" => title}) do
     tag = Repo.get!(Tag, id)
-    changeset = Tag.changeset(tag, tag_params)
+    changeset = Tag.changeset(tag, %{"title" => title})
 
     case Repo.update(changeset) do
       {:ok, tag} ->

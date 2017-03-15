@@ -14,8 +14,8 @@ defmodule Core.UserController do
 
       {:error, changeset} ->
         conn
-        |> put_status(:bad_request)
-        |> render("bad_request.json", errors: changeset.errors)
+        |> put_status(:unprocessable_entity)
+        |> render(Core.ChangesetView, "error.json", changeset: changeset)
     end
   end
 end
