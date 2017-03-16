@@ -8,7 +8,7 @@ defmodule Core.AnnotationTagController do
     changeset = AnnotationTag.changeset(%AnnotationTag{}, params)
 
     case Repo.insert(changeset) do
-      {:ok, annotation_tag} ->
+      {:ok, _annotation_tag} ->
         conn
         |> put_status(:created)
         |> render(Core.CodeView, "201.json", %{})
@@ -17,12 +17,6 @@ defmodule Core.AnnotationTagController do
         |> put_status(:unprocessable_entity)
         |> render(Core.ChangesetView, "error.json", changeset: changeset)
     end
-  end
-
-  def create(conn, _) do
-    conn
-    |> put_status(:unprocessable_entity)
-    |> render(Core.Error, "421.json", %{})
   end
 
   def delete(conn, %{"annotation_id" => annotation_id, "tag_id" => tag_id}) do

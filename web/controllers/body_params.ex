@@ -10,8 +10,6 @@ defmodule Core.BodyParams do
   body params object.
   """
 
-  import Plug.Conn
-
   def init(opts) do
     Keyword.fetch!(opts, :name)
   end
