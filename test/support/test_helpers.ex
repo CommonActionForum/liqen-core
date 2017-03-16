@@ -9,4 +9,12 @@ defmodule Core.TestHelpers do
     |> Core.User.changeset(changes)
     |> Repo.insert!()
   end
+
+  def insert_tag(attrs \\ %{}) do
+    changes = Map.merge(%{title: "Example tag"}, attrs)
+
+    %Core.Tag{}
+    |> Core.Tag.changeset(changes)
+    |> Repo.insert!()
+  end
 end
