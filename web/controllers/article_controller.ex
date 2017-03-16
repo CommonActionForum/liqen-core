@@ -3,6 +3,7 @@ defmodule Core.ArticleController do
 
   alias Core.Article
 
+  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
   plug Core.BodyParams, name: "article"
 
   def index(conn, _params) do
