@@ -4,6 +4,7 @@ defmodule Core.TagController do
 
   plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
   plug Core.BodyParams, name: "tag"
+  plug :find when action in [:update, :delete, :show]
 
   def index(conn, _params) do
     tags = Repo.all(Tag)
@@ -26,13 +27,13 @@ defmodule Core.TagController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    tag = Repo.get!(Tag, id)
+  def show(conn, %{"id" => _}) do
+    tag = conn.assigns[:tag]
     render(conn, "show.json", tag: tag)
   end
 
-  def update(conn, %{"id" => id, "tag" => tag_params}) do
-    tag = Repo.get!(Tag, id)
+  def update(conn, %{"id" => _, "tag" => tag_params}) do
+    tag = conn.assigns[:tag]
     changeset = Tag.changeset(tag, tag_params)
 
     case Repo.update(changeset) do
@@ -45,13 +46,27 @@ defmodule Core.TagController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    tag = Repo.get!(Tag, id)
+  def delete(conn, %{"id" => _}) do
+    tag = conn.assigns[:tag]
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
     Repo.delete!(tag)
 
     send_resp(conn, :no_content, "")
+  end
+
+  defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
+    case Repo.get(Tag, id) do
+      {:ok, tag} ->
+        conn
+        |> assign(:tag, tag)
+
+      _ ->
+        conn
+        |> put_status(:not_found)
+        |> render(Core.ErrorView, "404.json", %{})
+        |> halt()
+    end
   end
 end
