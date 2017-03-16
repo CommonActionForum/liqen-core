@@ -5,6 +5,7 @@ defmodule Core.ArticleController do
 
   plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
   plug Core.BodyParams, name: "article"
+  plug :find when action in [:update, :delete, :show]
 
   def index(conn, _params) do
     articles = Repo.all(Article)
@@ -27,13 +28,13 @@ defmodule Core.ArticleController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    article = Repo.get!(Article, id)
+  def show(conn, %{"id" => _}) do
+    article = conn.assigns[:article]
     render(conn, "show.json", article: article)
   end
 
   def update(conn, %{"id" => id, "article" => article_params}) do
-    article = Repo.get!(Article, id)
+    article = conn.assigns[:article]
     changeset = Article.changeset(article, article_params)
 
     case Repo.update(changeset) do
@@ -47,12 +48,27 @@ defmodule Core.ArticleController do
   end
 
   def delete(conn, %{"id" => id}) do
-    article = Repo.get!(Article, id)
+    article = conn.assigns[:article]
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
     Repo.delete!(article)
 
     send_resp(conn, :no_content, "")
+  end
+
+
+  defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
+    case Repo.get(Article, id) do
+      {:ok, article} ->
+        conn
+        |> assign(:article, article)
+
+      _ ->
+        conn
+        |> put_status(:not_found)
+        |> render(Core.ErrorView, "404.json", %{})
+        |> halt()
+    end
   end
 end
