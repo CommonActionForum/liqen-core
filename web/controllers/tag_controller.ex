@@ -3,13 +3,14 @@ defmodule Core.TagController do
   alias Core.Tag
 
   plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
+  plug Core.BodyParams, name: "tag"
 
   def index(conn, _params) do
     tags = Repo.all(Tag)
     render(conn, "index.json", tags: tags)
   end
 
-  def create(conn, tag_params) do
+  def create(conn, %{"tag" => tag_params}) do
     changeset = Tag.changeset(%Tag{}, tag_params)
 
     case Repo.insert(changeset) do
@@ -30,9 +31,9 @@ defmodule Core.TagController do
     render(conn, "show.json", tag: tag)
   end
 
-  def update(conn, %{"id" => id, "title" => title}) do
+  def update(conn, %{"id" => id, "tag" => tag_params}) do
     tag = Repo.get!(Tag, id)
-    changeset = Tag.changeset(tag, %{"title" => title})
+    changeset = Tag.changeset(tag, tag_params)
 
     case Repo.update(changeset) do
       {:ok, tag} ->

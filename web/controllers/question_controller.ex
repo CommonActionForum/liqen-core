@@ -3,6 +3,8 @@ defmodule Core.QuestionController do
 
   alias Core.Question
 
+  plug Core.BodyParams, name: "question"
+
   def index(conn, _params) do
     questions = Repo.all(Question)
     render(conn, "index.json", questions: questions)

@@ -3,12 +3,14 @@ defmodule Core.ArticleController do
 
   alias Core.Article
 
+  plug Core.BodyParams, name: "article"
+
   def index(conn, _params) do
     articles = Repo.all(Article)
     render(conn, "index.json", articles: articles)
   end
 
-  def create(conn, article_params) do
+  def create(conn, %{"article" => article_params}) do
     changeset = Article.changeset(%Article{}, article_params)
 
     case Repo.insert(changeset) do
@@ -29,8 +31,8 @@ defmodule Core.ArticleController do
     render(conn, "show.json", article: article)
   end
 
-  def update(conn, article_params) do
-    article = Repo.get!(Article, article_params["id"])
+  def update(conn, %{"id" => id, "article" => article_params}) do
+    article = Repo.get!(Article, id)
     changeset = Article.changeset(article, article_params)
 
     case Repo.update(changeset) do
