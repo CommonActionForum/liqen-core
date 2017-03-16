@@ -27,6 +27,7 @@ defmodule Core.ConnCase do
 
       import Core.Router.Helpers
       import Core.TestHelpers
+      import Core.ModelCase
 
       # The default endpoint for testing
       @endpoint Core.Endpoint
