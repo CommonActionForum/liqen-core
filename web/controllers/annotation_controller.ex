@@ -2,8 +2,9 @@ defmodule Core.AnnotationController do
   use Core.Web, :controller
   alias Core.Annotation
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: Core.Auth
+  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
   plug Core.BodyParams, name: "annotation"
+  plug :find when action in [:update, :delete, :show]
 
   def index(conn, _params) do
     annotations = Repo.all(Annotation)
@@ -31,21 +32,16 @@ defmodule Core.AnnotationController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    case Repo.get(Annotation, id) do
-      nil ->
-        conn
-        |> put_status(:not_found)
-        |> render(Core.ErrorView, "404.json", %{})
-      annotation ->
-        annotation = Repo.preload(annotation, :annotation_tags)
-        conn
-        |> render("show.json", annotation: annotation)
-    end
+  def show(conn, %{"id" => _}) do
+    annotation = conn.assigns[:annotation]
+    |> Repo.preload(:annotation_tags)
+
+    conn
+    |> render("show.json", annotation: annotation)
   end
 
-  def update(conn, %{"id" => id, "annotation" => annotation_params}) do
-    annotation = Repo.get!(Annotation, id)
+  def update(conn, %{"id" => _, "annotation" => annotation_params}) do
+    annotation = conn.assigns[:annotation]
     changeset = Annotation.changeset(annotation, annotation_params)
 
     case Repo.update(changeset) do
@@ -58,13 +54,27 @@ defmodule Core.AnnotationController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    annotation = Repo.get!(Annotation, id)
+  def delete(conn, %{"id" => _}) do
+    annotation = conn.assigns[:annotation]
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
     Repo.delete!(annotation)
 
     send_resp(conn, :no_content, "")
+  end
+
+  defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
+    case Repo.get(Annotation, id) do
+      {:ok, annotation} ->
+        conn
+        |> assign(:Annotation, annotation)
+
+      _ ->
+        conn
+        |> put_status(:not_found)
+        |> render(Core.ErrorView, "404.json", %{})
+        |> halt()
+    end
   end
 end
