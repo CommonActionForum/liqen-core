@@ -3,9 +3,10 @@ defmodule Core.QuestionControllerTest do
 
   setup do
     user = insert_user(%{})
+    question = insert_question(%{})
 
     {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user)
-    {:ok, %{conn: build_conn(), jwt: jwt}}
+    {:ok, %{conn: build_conn(), jwt: jwt, question: question}}
   end
 
   test "Forbid certain actions for unauthenticated users", %{conn: conn} do
@@ -19,11 +20,20 @@ defmodule Core.QuestionControllerTest do
     end)
   end
 
-  test "Do not require user authentication on certain actions", %{conn: conn} do
-    conn = conn
-    |> get(question_path(conn, :index))
+  test "Do not require user authentication on certain actions", %{conn: conn, question: question} do
+    Enum.each([
+      get(conn, question_path(conn, :index)),
+      get(conn, question_path(conn, :show, question.id)),
+    ], fn conn ->
+      assert json_response(conn, 200)
+    end)
+  end
 
-    assert json_response(conn, 200)
+  test "Return some 404 for unauthenticated users", %{conn: conn} do
+    conn = conn
+    |> get(question_path(conn, :show, 0))
+
+    assert json_response(conn, 404)
   end
 
   test "Return some 422", %{conn: c, jwt: jwt} do

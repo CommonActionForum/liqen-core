@@ -21,11 +21,20 @@ defmodule Core.TagControllerTest do
     end)
   end
 
-  test "Do not require user authentication on certain actions", %{conn: conn} do
-    conn = conn
-    |> get(tag_path(conn, :index))
+  test "Do not require user authentication on certain actions", %{conn: conn, tag: tag} do
+    Enum.each([
+      get(conn, tag_path(conn, :index)),
+      get(conn, tag_path(conn, :show, tag.id)),
+    ], fn conn ->
+      assert json_response(conn, 200)
+    end)
+  end
 
-    assert json_response(conn, 200)
+  test "Return some 404 for unauthenticated users", %{conn: conn} do
+    conn = conn
+    |> get(tag_path(conn, :show, 0))
+
+    assert json_response(conn, 404)
   end
 
   test "Return some 422", %{conn: c, jwt: jwt} do

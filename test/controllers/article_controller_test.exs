@@ -3,9 +3,10 @@ defmodule Core.ArticleControllerTest do
 
   setup do
     user = insert_user(%{})
+    article = insert_article(%{})
 
     {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user)
-    {:ok, %{conn: build_conn(), jwt: jwt}}
+    {:ok, %{conn: build_conn(), jwt: jwt, article: article}}
   end
 
   test "Forbid certain actions for unauthenticated users", %{conn: conn} do
@@ -19,11 +20,20 @@ defmodule Core.ArticleControllerTest do
     end)
   end
 
-  test "Do not require user authentication on certain actions", %{conn: conn} do
-    conn = conn
-    |> get(article_path(conn, :index))
+  test "Do not require user authentication on certain actions", %{conn: conn, article: article} do
+    Enum.each([
+      get(conn, article_path(conn, :index)),
+      get(conn, article_path(conn, :show, article.id)),
+    ], fn conn ->
+      assert json_response(conn, 200)
+    end)
+  end
 
-    assert json_response(conn, 200)
+  test "Return some 404 for unauthenticated users", %{conn: conn} do
+    conn = conn
+    |> get(article_path(conn, :show, 0))
+
+    assert json_response(conn, 404)
   end
 
   test "Return some 422", %{conn: c, jwt: jwt} do
