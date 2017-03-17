@@ -58,15 +58,14 @@ defmodule Core.TagController do
 
   defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
     case Repo.get(Tag, id) do
-      {:ok, tag} ->
-        conn
-        |> assign(:tag, tag)
-
-      _ ->
+      nil ->
         conn
         |> put_status(:not_found)
         |> render(Core.ErrorView, "404.json", %{})
         |> halt()
+      tag ->
+        conn
+        |> assign(:tag, tag)
     end
   end
 end

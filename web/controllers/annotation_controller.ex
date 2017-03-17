@@ -66,15 +66,15 @@ defmodule Core.AnnotationController do
 
   defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
     case Repo.get(Annotation, id) do
-      {:ok, annotation} ->
-        conn
-        |> assign(:Annotation, annotation)
-
-      _ ->
+      nil ->
         conn
         |> put_status(:not_found)
         |> render(Core.ErrorView, "404.json", %{})
         |> halt()
+
+      annotation ->
+        conn
+        |> assign(:annotation, annotation)
     end
   end
 end
