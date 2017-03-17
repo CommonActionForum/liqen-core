@@ -5,6 +5,7 @@ defmodule Core.Tag do
     field :title, :string
 
     many_to_many :annotations, Core.Annotation, join_through: "annotations_tags"
+    many_to_many :questions, Core.Question, join_through: "questions_tags"
 
     timestamps()
   end

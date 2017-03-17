@@ -1,0 +1,31 @@
+defmodule Core.QuestionTagController do
+  use Core.Web, :controller
+  alias Core.QuestionTag
+
+  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth}
+
+  def create(conn, params) do
+    changeset = QuestionTag.changeset(%QuestionTag{}, params)
+
+    case Repo.insert(changeset) do
+      {:ok, _question_tag} ->
+        conn
+        |> put_status(:created)
+        |> render(Core.CodeView, "201.json", %{})
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(Core.ChangesetView, "error.json", changeset: changeset)
+    end
+  end
+
+  def delete(conn, %{"question_id" => question_id, "tag_id" => tag_id}) do
+    tag = Repo.get_by!(QuestionTag, %{question_id: question_id, tag_id: tag_id})
+
+    # Here we use delete! (with a bang) because we expect
+    # it to always work (and if it does not, it will raise).
+    Repo.delete!(tag)
+
+    send_resp(conn, :no_content, "")
+  end
+end

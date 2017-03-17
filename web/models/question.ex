@@ -4,6 +4,8 @@ defmodule Core.Question do
   schema "questions" do
     field :title, :string
 
+    many_to_many :question_tags, Core.Tag, join_through: Core.QuestionTag
+
     timestamps()
   end
 
