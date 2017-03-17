@@ -29,6 +29,8 @@ defmodule Core.QuestionController do
 
   def show(conn, %{"id" => _}) do
     question = conn.assigns[:question]
+    |> Repo.preload(:question_tags)
+
     render(conn, "show.json", question: question)
   end
 
@@ -58,15 +60,14 @@ defmodule Core.QuestionController do
 
   defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
     case Repo.get(Question, id) do
-      {:ok, question} ->
-        conn
-        |> assign(:Question, question)
-
-      _ ->
+      nil ->
         conn
         |> put_status(:not_found)
         |> render(Core.ErrorView, "404.json", %{})
         |> halt()
+      question ->
+        conn
+        |> assign(:question, question)
     end
   end
 end
