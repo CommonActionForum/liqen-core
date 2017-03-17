@@ -1,8 +1,8 @@
 defmodule Core.QuestionController do
   use Core.Web, :controller
-
   alias Core.Question
 
+  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
   plug Core.BodyParams, name: "question"
 
   def index(conn, _params) do
