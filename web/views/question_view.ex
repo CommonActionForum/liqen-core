@@ -11,7 +11,6 @@ defmodule Core.QuestionView do
 
   def render("question.json", %{question: question}) do
     %{id: question.id,
-      title: question.title,
-      tags: question.tags}
+      title: question.title}
   end
 end
