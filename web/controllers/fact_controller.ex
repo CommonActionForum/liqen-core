@@ -18,7 +18,9 @@ defmodule Core.FactController do
 
     case Repo.insert(changeset) do
       {:ok, fact} ->
-        fact = Repo.preload(fact, :question)
+        fact = fact
+        |> Repo.preload(:question)
+        |> Repo.preload(:annotations)
 
         conn
         |> put_status(:created)
@@ -34,6 +36,7 @@ defmodule Core.FactController do
   def show(conn, %{"id" => _}) do
     fact = conn.assigns[:fact]
     |> Repo.preload(:question)
+    |> Repo.preload(:annotations)
 
     render(conn, "show.json", fact: fact)
   end
@@ -44,6 +47,10 @@ defmodule Core.FactController do
 
     case Repo.update(changeset) do
       {:ok, fact} ->
+        fact = fact
+        |> Repo.preload(:question)
+        |> Repo.preload(:annotations)
+
         render(conn, "show.json", fact: fact)
       {:error, changeset} ->
         conn

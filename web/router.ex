@@ -28,7 +28,9 @@ defmodule Core.Router do
     resources "/questions", QuestionController, except: [:new, :edit] do
       resources "/tags", QuestionTagController, only: [:create, :delete]
     end
-    resources "/facts", FactController, except: [:new, :edit]
+    resources "/facts", FactController, except: [:new, :edit] do
+      resources "/annotations", FactAnnotationController, only: [:create, :delete]
+    end
 
     get "/private", PrivateController, :example
   end

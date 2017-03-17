@@ -3,6 +3,7 @@ defmodule Core.Fact do
 
   schema "facts" do
     belongs_to :question, Core.Question
+    many_to_many :annotations, Core.Annotation, join_through: Core.FactAnnotation
 
     timestamps()
   end
