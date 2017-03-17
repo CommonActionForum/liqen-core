@@ -60,15 +60,14 @@ defmodule Core.ArticleController do
 
   defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
     case Repo.get(Article, id) do
-      {:ok, article} ->
-        conn
-        |> assign(:article, article)
-
-      _ ->
+      nil ->
         conn
         |> put_status(:not_found)
         |> render(Core.ErrorView, "404.json", %{})
         |> halt()
+      article ->
+        conn
+        |> assign(:article, article)
     end
   end
 end

@@ -1,9 +1,10 @@
 defmodule Core.QuestionController do
   use Core.Web, :controller
-
   alias Core.Question
 
+  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
   plug Core.BodyParams, name: "question"
+  plug :find when action in [:update, :delete, :show]
 
   def index(conn, _params) do
     questions = Repo.all(Question)
@@ -26,13 +27,15 @@ defmodule Core.QuestionController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    question = Repo.get!(Question, id)
+  def show(conn, %{"id" => _}) do
+    question = conn.assigns[:question]
+    |> Repo.preload(:question_tags)
+
     render(conn, "show.json", question: question)
   end
 
-  def update(conn, %{"id" => id, "question" => question_params}) do
-    question = Repo.get!(Question, id)
+  def update(conn, %{"id" => _, "question" => question_params}) do
+    question = conn.assigns[:question]
     changeset = Question.changeset(question, question_params)
 
     case Repo.update(changeset) do
@@ -45,13 +48,26 @@ defmodule Core.QuestionController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    question = Repo.get!(Question, id)
+  def delete(conn, %{"id" => _}) do
+    question = conn.assigns[:question]
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
     Repo.delete!(question)
 
     send_resp(conn, :no_content, "")
+  end
+
+  defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
+    case Repo.get(Question, id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> render(Core.ErrorView, "404.json", %{})
+        |> halt()
+      question ->
+        conn
+        |> assign(:question, question)
+    end
   end
 end
