@@ -1,20 +1,18 @@
-defmodule Core.TagControllerTest do
+defmodule Core.ArticleControllerTest do
   use Core.ConnCase
 
   setup do
     user = insert_user(%{})
-    tag = insert_tag(%{})
 
     {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user)
-    {:ok, %{conn: build_conn(), jwt: jwt, tag: tag}}
-
+    {:ok, %{conn: build_conn(), jwt: jwt}}
   end
 
   test "Forbid certain actions for unauthenticated users", %{conn: conn} do
     Enum.each([
-      put(conn, tag_path(conn, :update, "123", %{})),
-      post(conn, tag_path(conn, :create, %{})),
-      delete(conn, tag_path(conn, :delete, "123")),
+      put(conn, article_path(conn, :update, "123", %{})),
+      post(conn, article_path(conn, :create, %{})),
+      delete(conn, article_path(conn, :delete, "123")),
     ], fn conn ->
       assert json_response(conn, 401)
       assert conn.halted
@@ -23,7 +21,7 @@ defmodule Core.TagControllerTest do
 
   test "Do not require user authentication on certain actions", %{conn: conn} do
     conn = conn
-    |> get(tag_path(conn, :index))
+    |> get(article_path(conn, :index))
 
     assert json_response(conn, 200)
   end
@@ -32,7 +30,7 @@ defmodule Core.TagControllerTest do
     conn = put_req_header(c, "authorization", "Bearer #{jwt}")
 
     Enum.each([
-      post(conn, tag_path(conn, :create, %{})),
+      post(conn, article_path(conn, :create, %{})),
     ], fn conn ->
       assert json_response(conn, 422)
     end)
@@ -42,8 +40,8 @@ defmodule Core.TagControllerTest do
     conn = put_req_header(c, "authorization", "Bearer #{jwt}")
 
     Enum.each([
-      put(conn, tag_path(conn, :update, "123", %{})),
-      delete(conn, tag_path(conn, :delete, "123")),
+      put(conn, article_path(conn, :update, "123", %{})),
+      delete(conn, article_path(conn, :delete, "123")),
     ], fn conn ->
       assert json_response(conn, 404)
     end)

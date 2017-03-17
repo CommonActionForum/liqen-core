@@ -1,10 +1,8 @@
-defmodule Core.Tag do
+defmodule Core.Question do
   use Core.Web, :model
 
-  schema "tags" do
+  schema "questions" do
     field :title, :string
-
-    many_to_many :annotations, Core.Annotation, join_through: "annotations_tags"
 
     timestamps()
   end

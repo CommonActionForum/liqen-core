@@ -1,25 +1,26 @@
-defmodule Core.TagController do
+defmodule Core.ArticleController do
   use Core.Web, :controller
-  alias Core.Tag
+
+  alias Core.Article
 
   plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
-  plug Core.BodyParams, name: "tag"
+  plug Core.BodyParams, name: "article"
   plug :find when action in [:update, :delete, :show]
 
   def index(conn, _params) do
-    tags = Repo.all(Tag)
-    render(conn, "index.json", tags: tags)
+    articles = Repo.all(Article)
+    render(conn, "index.json", articles: articles)
   end
 
-  def create(conn, %{"tag" => tag_params}) do
-    changeset = Tag.changeset(%Tag{}, tag_params)
+  def create(conn, %{"article" => article_params}) do
+    changeset = Article.changeset(%Article{}, article_params)
 
     case Repo.insert(changeset) do
-      {:ok, tag} ->
+      {:ok, article} ->
         conn
         |> put_status(:created)
-        |> put_resp_header("location", tag_path(conn, :show, tag))
-        |> render("show.json", tag: tag)
+        |> put_resp_header("location", article_path(conn, :show, article))
+        |> render("show.json", article: article)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -28,17 +29,17 @@ defmodule Core.TagController do
   end
 
   def show(conn, %{"id" => _}) do
-    tag = conn.assigns[:tag]
-    render(conn, "show.json", tag: tag)
+    article = conn.assigns[:article]
+    render(conn, "show.json", article: article)
   end
 
-  def update(conn, %{"id" => _, "tag" => tag_params}) do
-    tag = conn.assigns[:tag]
-    changeset = Tag.changeset(tag, tag_params)
+  def update(conn, %{"id" => id, "article" => article_params}) do
+    article = conn.assigns[:article]
+    changeset = Article.changeset(article, article_params)
 
     case Repo.update(changeset) do
-      {:ok, tag} ->
-        render(conn, "show.json", tag: tag)
+      {:ok, article} ->
+        render(conn, "show.json", article: article)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -46,21 +47,22 @@ defmodule Core.TagController do
     end
   end
 
-  def delete(conn, %{"id" => _}) do
-    tag = conn.assigns[:tag]
+  def delete(conn, %{"id" => id}) do
+    article = conn.assigns[:article]
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
-    Repo.delete!(tag)
+    Repo.delete!(article)
 
     send_resp(conn, :no_content, "")
   end
 
+
   defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
-    case Repo.get(Tag, id) do
-      {:ok, tag} ->
+    case Repo.get(Article, id) do
+      {:ok, article} ->
         conn
-        |> assign(:tag, tag)
+        |> assign(:article, article)
 
       _ ->
         conn
