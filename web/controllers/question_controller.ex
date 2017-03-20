@@ -3,6 +3,7 @@ defmodule Core.QuestionController do
   alias Core.Question
 
   plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
+  plug :authorize when action in [:create, :update, :delete]
   plug Core.BodyParams, name: "question"
   plug :find when action in [:update, :delete, :show]
 
@@ -56,6 +57,22 @@ defmodule Core.QuestionController do
     Repo.delete!(question)
 
     send_resp(conn, :no_content, "")
+  end
+
+  # Allow certain users to perform actions
+  #
+  # It is recommended to use this function as Plug
+  defp authorize(conn, _opts) do
+    user = Guardian.Plug.current_resource(conn)
+
+    if Core.User.can?(user, "super_user") do
+      conn
+    else
+      conn
+      |> put_status(:forbidden)
+      |> render(Core.ErrorView, "403.json", %{})
+      |> halt()
+    end
   end
 
   defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
