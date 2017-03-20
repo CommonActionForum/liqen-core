@@ -7,6 +7,59 @@ defmodule Core.Auth do
   alias Core.User
 
   @doc """
+  Init function of the Plug
+  """
+  def init(opts), do: opts
+
+  @doc """
+  Call function of the Plug
+  """
+  def call(conn, %{key: key, type: type}) do
+    call(conn, %{resource: conn.assigns[key],
+                 type: type,
+                 action: action_name(conn)})
+  end
+  def call(conn, %{resource: resource, type: type, action: action}) do
+    conn
+    |> validate_session()
+    |> validate_permissions(resource, type, to_string(action))
+  end
+
+  # Check if the token in the connection is valid
+  defp validate_session(conn) do
+    token = Guardian.Plug.current_token(conn)
+
+    case Guardian.decode_and_verify(token) do
+      {:ok, claims} ->
+        conn
+      {:error, reason} ->
+        conn
+        |> put_status(:unauthorized)
+        |> render(Core.ErrorView, "401.json", %{})
+        |> halt()
+    end
+  end
+
+  # Check if the user in session has permissions to do an `action`
+  # to the resource of type type
+  defp validate_permissions(conn, resource, type, action) do
+    user = Guardian.Plug.current_resource(conn)
+    valid = case resource do
+              nil -> User.can?(user, action, type)
+              _ -> User.can?(user, action, type, resource)
+            end
+
+    if valid do
+      conn
+    else
+      conn
+      |> put_status(:forbidden)
+      |> render(Core.ErrorView, "403.json", %{})
+      |> halt()
+    end
+  end
+
+  @doc """
   Try to authenticate an user and if success, starts a session for him
   """
   def login(conn, email, pass, opts) do
