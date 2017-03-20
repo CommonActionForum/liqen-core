@@ -40,16 +40,16 @@ defmodule Core.User do
       %Ecto.Changeset{valid?: true, changes: %{role: role}} ->
         permissions =
           case role do
-            "root" -> ["super_root"]
+            "root" -> ["super_user"]
             "beta_user" -> [
               "create_facts",
-              "read_authored_facts",
-              "update_authored_facts",
-              "delete_authored_facts",
+              "read_facts",
+              "update_facts",
+              "delete_facts",
               "create_annotations",
-              "read_authored_annotations",
-              "update_authored_annotations",
-              "delete_authored_annotations",
+              "read_annotations",
+              "update_annotations",
+              "delete_annotations",
             ]
           end
         put_change(changeset, :permissions, permissions)
