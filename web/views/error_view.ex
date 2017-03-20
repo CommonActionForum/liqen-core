@@ -15,6 +15,12 @@ defmodule Core.ErrorView do
     }
   end
 
+  def render("403.json", _assigns) do
+    %{
+      message: "You are not allowed to perform this action"
+    }
+  end
+
   def render("404.json", _assigns) do
     %{
       message: "Resource not found"
