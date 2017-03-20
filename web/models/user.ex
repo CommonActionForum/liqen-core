@@ -70,7 +70,7 @@ defmodule Core.User do
   def can?(user, action, type, object) do
     Enum.member?(user.permissions, "super_user") or
     Enum.member?(user.permissions, "#{action}_all_#{type}") or (
-      Enum.member(user.permissions, "#{action}_#{type}") and
+      Enum.member?(user.permissions, "#{action}_#{type}") and
       object.author === user.id
     )
   end
