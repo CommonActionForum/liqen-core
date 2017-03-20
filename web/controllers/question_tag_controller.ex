@@ -3,6 +3,7 @@ defmodule Core.QuestionTagController do
   alias Core.QuestionTag
 
   plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth}
+  plug :authorize when action in [:create, :update, :delete]
 
   def create(conn, params) do
     changeset = QuestionTag.changeset(%QuestionTag{}, params)
@@ -27,5 +28,21 @@ defmodule Core.QuestionTagController do
     Repo.delete!(tag)
 
     send_resp(conn, :no_content, "")
+  end
+
+  # Allow certain users to perform actions
+  #
+  # It is recommended to use this function as Plug
+  defp authorize(conn, _opts) do
+    user = Guardian.Plug.current_resource(conn)
+
+    if Core.User.can?(user, "super_user") do
+      conn
+    else
+      conn
+      |> put_status(:forbidden)
+      |> render(Core.ErrorView, "403.json", %{})
+      |> halt()
+    end
   end
 end
