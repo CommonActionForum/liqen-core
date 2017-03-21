@@ -3,7 +3,8 @@ defmodule Core.TestHelpers do
 
   def insert_user(attrs \\ %{}) do
     changes = Map.merge(%{email: "john#{Base.encode16(:crypto.strong_rand_bytes(8))}@example.com",
-                          password: "secret"}, attrs)
+                          password: "secret",
+                          role: "beta_user"}, attrs)
 
     %Core.User{}
     |> Core.User.changeset(changes)
