@@ -36,7 +36,7 @@ defmodule Core.TestHelpers do
     |> Repo.insert!()
   end
 
-  def insert_annotation(attrs \\ %{}) do
+  def insert_annotation(user, attrs \\ %{}) do
     changes = Map.merge(%{article_id: 0,
                           target: %{"type" => "FragmentSelector",
                                     "value" => "",
@@ -44,8 +44,8 @@ defmodule Core.TestHelpers do
                                                      "prefix" => "",
                                                      "exact" => "",
                                                      "suffix" => ""}}}, attrs)
-
-    %Core.Annotation{}
+    user
+    |> Ecto.build_assoc(:annotations)
     |> Core.Annotation.changeset(changes)
     |> Repo.insert!()
   end
