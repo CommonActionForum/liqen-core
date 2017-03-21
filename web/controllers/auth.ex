@@ -1,4 +1,21 @@
 defmodule Core.Auth do
+  @moduledoc """
+  Phoenix Plug and
+
+  This module is used for creating sessions and for checking user permissions.
+
+  ## Create sessions
+
+  Use the login function to create a session
+
+
+  ## Use as Plug to verify user permissions
+
+  ```
+  plug Core.Auth %{key: :annotation,
+                   type: "annotations"}
+  ```
+  """
   use Core.Web, :controller
 
   import Plug.Conn
@@ -42,11 +59,12 @@ defmodule Core.Auth do
 
   # Check if the user in session has permissions to do an `action`
   # to the resource of type type
+  defp validate_permissions(conn = %Plug.Conn{halted: true}, _, _, _), do: conn
   defp validate_permissions(conn, resource, type, action) do
     user = Guardian.Plug.current_resource(conn)
     valid = case resource do
-              nil -> User.can?(user, action, type)
-              _ -> User.can?(user, action, type, resource)
+              %{author: _} -> User.can?(user, action, type, resource)
+              _ -> User.can?(user, action, type)
             end
 
     if valid do
