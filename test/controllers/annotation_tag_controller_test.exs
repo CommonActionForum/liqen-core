@@ -38,7 +38,7 @@ defmodule Core.AnnotationTagControllerTest do
 
   # TODO: Check delete /annotations/<A_ID>/tags/<T_ID>
   # When tag.id = <T_ID> doesn't exist
-  test "Delete AnnotationTag: Tag not found", %{annotation: annotation, jwt: jwt, tag: tag} do
+  test "Delete AnnotationTag: Tag not found", %{annotation: _, jwt: _, tag: _} do
     # Create the AnnotationTag using models...
     # Create the connection
     # assert response(conn, 404)
