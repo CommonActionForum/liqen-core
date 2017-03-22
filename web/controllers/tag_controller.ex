@@ -2,16 +2,16 @@ defmodule Core.TagController do
   use Core.Web, :controller
   alias Core.Tag
 
-  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
-  plug Core.BodyParams, name: "tag"
   plug :find when action in [:update, :delete, :show]
+  plug Core.Auth, %{key: tag,
+                    type: "tags"} when action in [:create, :update, :delete]
 
   def index(conn, _params) do
     tags = Repo.all(Tag)
     render(conn, "index.json", tags: tags)
   end
 
-  def create(conn, %{"tag" => tag_params}) do
+  def create(conn, tag_params) do
     changeset = Tag.changeset(%Tag{}, tag_params)
 
     case Repo.insert(changeset) do
@@ -27,12 +27,12 @@ defmodule Core.TagController do
     end
   end
 
-  def show(conn, %{"id" => _}) do
+  def show(conn, _) do
     tag = conn.assigns[:tag]
     render(conn, "show.json", tag: tag)
   end
 
-  def update(conn, %{"id" => _, "tag" => tag_params}) do
+  def update(conn, tag_params) do
     tag = conn.assigns[:tag]
     changeset = Tag.changeset(tag, tag_params)
 
@@ -46,7 +46,7 @@ defmodule Core.TagController do
     end
   end
 
-  def delete(conn, %{"id" => _}) do
+  def delete(conn, _) do
     tag = conn.assigns[:tag]
 
     # Here we use delete! (with a bang) because we expect

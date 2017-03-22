@@ -2,59 +2,71 @@ defmodule Core.AnnotationControllerTest do
   use Core.ConnCase
 
   setup do
-    user = insert_user(%{})
+    # Create a super user
+    user = insert_user(%{}, true)
+
     article = insert_article(%{})
-    annotation = insert_annotation(%{article_id: article.id})
+
+    # Create an authored annotation
+    annotation = insert_annotation(user, %{article_id: article.id})
+
 
     {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user)
-    {:ok, %{conn: build_conn(), jwt: jwt, annotation: annotation}}
+
+    {:ok, %{annotation: annotation, jwt: jwt, article: article}}
   end
 
-  test "Forbid certain actions for unauthenticated users", %{conn: conn} do
-    Enum.each([
-      put(conn, annotation_path(conn, :update, "123", %{})),
-      post(conn, annotation_path(conn, :create, %{})),
-      delete(conn, annotation_path(conn, :delete, "123")),
-    ], fn conn ->
-      assert json_response(conn, 401)
-      assert conn.halted
-    end)
-  end
+  test "Create correctly", %{article: article, jwt: jwt} do
+    params = %{
+      "article_id" => article.id,
+      "target" => %{
+        "type" => "FragmentSelector",
+        "value" => "",
+        "refinedBy" => %{
+          "type" => "TextQuoteSelector",
+          "prefix" => "",
+          "exact" => "",
+          "suffix" => ""
+        }
+      }
+    }
 
-  test "Do not require user authentication on certain actions", %{conn: conn, annotation: annotation} do
-    Enum.each([
-      get(conn, annotation_path(conn, :index)),
-      get(conn, annotation_path(conn, :show, annotation.id)),
-    ], fn conn ->
-      assert json_response(conn, 200)
-    end)
-  end
-
-  test "Return some 404 for unauthenticated users", %{conn: conn} do
+    conn = build_conn()
     conn = conn
-    |> get(annotation_path(conn, :show, 0))
+    |> put_req_header("authorization", "Bearer #{jwt}")
+    |> post(annotation_path(conn, :create), params)
 
-    assert json_response(conn, 404)
+    # Check response body
+    annotation = json_response(conn, 201)
+    assert annotation
+
+    # Check "location" header
+    assert(annotation_path(conn, :show, annotation["id"])
+      in get_resp_header(conn, "location"))
   end
 
-  test "Return some 422", %{conn: c, jwt: jwt} do
-    conn = put_req_header(c, "authorization", "Bearer #{jwt}")
+  test "Find the proper annotation", %{annotation: annotation} do
+    conn = build_conn()
+    conn = get(conn, annotation_path(conn, :show, annotation.id))
 
-    Enum.each([
-      post(conn, annotation_path(conn, :create, %{})),
-    ], fn conn ->
-      assert json_response(conn, 422)
-    end)
+    assert json_response(conn, 200)
   end
 
-  test "Return some 404", %{conn: c, jwt: jwt} do
-    conn = put_req_header(c, "authorization", "Bearer #{jwt}")
+  test "Access to update properly", %{annotation: annotation, jwt: jwt} do
+    conn = build_conn()
+    conn = conn
+    |> put_req_header("authorization", "Bearer #{jwt}")
+    |> put(annotation_path(conn, :update, annotation.id, %{}))
 
-    Enum.each([
-      put(conn, annotation_path(conn, :update, "123", %{})),
-      delete(conn, annotation_path(conn, :delete, "123")),
-    ], fn conn ->
-      assert json_response(conn, 404)
-    end)
+    assert json_response(conn, 200)
+  end
+
+  test "Access to delete properly", %{annotation: annotation, jwt: jwt} do
+    conn = build_conn()
+    conn = conn
+    |> put_req_header("authorization", "Bearer #{jwt}")
+    |> delete(annotation_path(conn, :delete, annotation.id))
+
+    assert response(conn, 204)
   end
 end

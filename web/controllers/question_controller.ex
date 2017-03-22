@@ -2,16 +2,16 @@ defmodule Core.QuestionController do
   use Core.Web, :controller
   alias Core.Question
 
-  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
-  plug Core.BodyParams, name: "question"
   plug :find when action in [:update, :delete, :show]
+  plug Core.Auth, %{key: :question,
+                    type: "questions"} when action in [:create, :update, :delete]
 
   def index(conn, _params) do
     questions = Repo.all(Question)
     render(conn, "index.json", questions: questions)
   end
 
-  def create(conn, %{"question" => question_params}) do
+  def create(conn, question_params) do
     changeset = Question.changeset(%Question{}, question_params)
 
     case Repo.insert(changeset) do
@@ -27,14 +27,14 @@ defmodule Core.QuestionController do
     end
   end
 
-  def show(conn, %{"id" => _}) do
+  def show(conn, _) do
     question = conn.assigns[:question]
     |> Repo.preload(:question_tags)
 
     render(conn, "show.json", question: question)
   end
 
-  def update(conn, %{"id" => _, "question" => question_params}) do
+  def update(conn, question_params) do
     question = conn.assigns[:question]
     changeset = Question.changeset(question, question_params)
 
@@ -48,7 +48,7 @@ defmodule Core.QuestionController do
     end
   end
 
-  def delete(conn, %{"id" => _}) do
+  def delete(conn, _) do
     question = conn.assigns[:question]
 
     # Here we use delete! (with a bang) because we expect
