@@ -1,8 +1,10 @@
 defmodule Core.AnnotationTagController do
   use Core.Web, :controller
   alias Core.AnnotationTag
+  alias Core.Annotation
 
-  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth}
+  plug :find
+  plug Core.Auth, %{key: :annotation, type: "annotations"}
 
   def create(conn, params) do
     changeset = AnnotationTag.changeset(%AnnotationTag{}, params)
@@ -27,5 +29,22 @@ defmodule Core.AnnotationTagController do
     Repo.delete!(tag)
 
     send_resp(conn, :no_content, "")
+  end
+
+  # Finds an annotation with "id"=`id`
+  #
+  # Assigns that annotation to the `conn` object
+  defp find(conn = %Plug.Conn{params: %{"annotation_id" => id}}, _opts) do
+    case Repo.get(Annotation, id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> render(Core.ErrorView, "404.json", %{})
+        |> halt()
+
+      annotation ->
+        conn
+        |> assign(:annotation, annotation)
+    end
   end
 end
