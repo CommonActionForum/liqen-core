@@ -3,17 +3,16 @@ defmodule Core.ArticleController do
 
   alias Core.Article
 
-  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
-  plug :authorize when action in [:create, :update, :delete]
-  plug Core.BodyParams, name: "article"
   plug :find when action in [:update, :delete, :show]
+  plug Core.Auth, %{key: :article,
+                    type: "articles"} when action in [:create, :update, :delete]
 
   def index(conn, _params) do
     articles = Repo.all(Article)
     render(conn, "index.json", articles: articles)
   end
 
-  def create(conn, %{"article" => article_params}) do
+  def create(conn, article_params) do
     changeset = Article.changeset(%Article{}, article_params)
 
     case Repo.insert(changeset) do
@@ -29,12 +28,12 @@ defmodule Core.ArticleController do
     end
   end
 
-  def show(conn, %{"id" => _}) do
+  def show(conn, _) do
     article = conn.assigns[:article]
     render(conn, "show.json", article: article)
   end
 
-  def update(conn, %{"id" => id, "article" => article_params}) do
+  def update(conn, article_params) do
     article = conn.assigns[:article]
     changeset = Article.changeset(article, article_params)
 
@@ -48,7 +47,7 @@ defmodule Core.ArticleController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
+  def delete(conn, _) do
     article = conn.assigns[:article]
 
     # Here we use delete! (with a bang) because we expect
@@ -56,22 +55,6 @@ defmodule Core.ArticleController do
     Repo.delete!(article)
 
     send_resp(conn, :no_content, "")
-  end
-
-  # Allow certain users to perform actions
-  #
-  # It is recommended to use this function as Plug
-  defp authorize(conn, _opts) do
-    user = Guardian.Plug.current_resource(conn)
-
-    if Core.User.can?(user, "super_user") do
-      conn
-    else
-      conn
-      |> put_status(:forbidden)
-      |> render(Core.ErrorView, "403.json", %{})
-      |> halt()
-    end
   end
 
   defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
