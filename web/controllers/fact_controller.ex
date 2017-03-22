@@ -2,8 +2,9 @@ defmodule Core.FactController do
   use Core.Web, :controller
   alias Core.Fact
 
-  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
   plug :find when action in [:update, :delete, :show]
+  plug Core.Auth, %{key: :fact,
+                    type: "facts"} when action in [:create, :update, :delete]
 
   def index(conn, _params) do
     facts = Repo.all(Fact)

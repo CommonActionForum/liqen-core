@@ -2,7 +2,8 @@ defmodule Core.FactAnnotationController do
   use Core.Web, :controller
   alias Core.FactAnnotation
 
-  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth}
+  plug :find when
+  plug Core.Auth, %{key: :fact, type: "facts"}
 
   def create(conn, params) do
     changeset = FactAnnotation.changeset(%FactAnnotation{}, params)
@@ -19,13 +20,28 @@ defmodule Core.FactAnnotationController do
     end
   end
 
-  def delete(conn, %{"fact_id" => fact_id, "annotation_id" => annotation_id}) do
-    fact = Repo.get_by!(FactAnnotation, %{fact_id: fact_id, annotation_id: annotation_id})
+  def delete(conn, %{"annotation_id" => annotation_id}) do
+    fact = conn.assigns[:annotation]
+    annotation = Repo.get_by!(FactAnnotation, %{fact_id: fact.id, annotation_id: annotation_id})
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
-    Repo.delete!(fact)
+    Repo.delete!(annotation)
 
     send_resp(conn, :no_content, "")
+  end
+
+  defp find(conn = %Plug.Conn{params: %{"fact_id" => id}}, _opts) do
+    case Repo.get(Fact, id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> render(Core.ErrorView, "404.json", %{})
+        |> halt()
+
+      fact ->
+        conn
+        |> assign(:fact, fact)
+    end
   end
 end

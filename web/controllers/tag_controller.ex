@@ -2,9 +2,9 @@ defmodule Core.TagController do
   use Core.Web, :controller
   alias Core.Tag
 
-  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
-  plug :authorize when action in [:create, :update, :delete]
   plug :find when action in [:update, :delete, :show]
+  plug Core.Auth, %{key: tag,
+                    type: "tags"} when action in [:create, :update, :delete]
 
   def index(conn, _params) do
     tags = Repo.all(Tag)
@@ -54,22 +54,6 @@ defmodule Core.TagController do
     Repo.delete!(tag)
 
     send_resp(conn, :no_content, "")
-  end
-
-  # Allow certain users to perform actions
-  #
-  # It is recommended to use this function as Plug
-  defp authorize(conn, _opts) do
-    user = Guardian.Plug.current_resource(conn)
-
-    if Core.User.can?(user, "super_user") do
-      conn
-    else
-      conn
-      |> put_status(:forbidden)
-      |> render(Core.ErrorView, "403.json", %{})
-      |> halt()
-    end
   end
 
   defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do

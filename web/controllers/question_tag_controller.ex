@@ -2,8 +2,8 @@ defmodule Core.QuestionTagController do
   use Core.Web, :controller
   alias Core.QuestionTag
 
-  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth}
-  plug :authorize when action in [:create, :update, :delete]
+  plug :find
+  plug Core.Auth, %{key: :question, type: "questions"}
 
   def create(conn, params) do
     changeset = QuestionTag.changeset(%QuestionTag{}, params)
@@ -30,19 +30,20 @@ defmodule Core.QuestionTagController do
     send_resp(conn, :no_content, "")
   end
 
-  # Allow certain users to perform actions
+  # Finds an annotation with "id"=`id`
   #
-  # It is recommended to use this function as Plug
-  defp authorize(conn, _opts) do
-    user = Guardian.Plug.current_resource(conn)
+  # Assigns that annotation to the `conn` object
+  defp find(conn = %Plug.Conn{params: %{"question_id" => id}}, _opts) do
+    case Repo.get(Question, id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> render(Core.ErrorView, "404.json", %{})
+        |> halt()
 
-    if Core.User.can?(user, "super_user") do
-      conn
-    else
-      conn
-      |> put_status(:forbidden)
-      |> render(Core.ErrorView, "403.json", %{})
-      |> halt()
+      question ->
+        conn
+        |> assign(:question, question)
     end
   end
 end
