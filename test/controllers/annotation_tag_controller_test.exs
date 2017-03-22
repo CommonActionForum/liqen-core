@@ -3,8 +3,7 @@ defmodule Core.AnnotationTagControllerTest do
 
   setup do
     # Create a super user
-    user = insert_user(%{})
-    |> Map.put(:permissions, ["super_user"])
+    user = insert_user(%{}, true)
     {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user)
 
     article = insert_article(%{})

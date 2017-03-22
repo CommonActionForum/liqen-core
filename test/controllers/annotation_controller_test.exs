@@ -3,8 +3,7 @@ defmodule Core.AnnotationControllerTest do
 
   setup do
     # Create a super user
-    user = insert_user(%{})
-    |> Map.put(:permissions, ["super_user"])
+    user = insert_user(%{}, true)
 
     article = insert_article(%{})
 
