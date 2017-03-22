@@ -67,6 +67,11 @@ defmodule Core.User do
     Enum.member?(user.permissions, "create_#{type}")
   end
 
+  def can?(user, action, type) do
+    Enum.member?(user.permissions, "super_user") or
+    Enum.member?(user.permissions, "#{action}_all_#{type}")
+  end
+
   def can?(user, action, type, object) do
     Enum.member?(user.permissions, "super_user") or
     Enum.member?(user.permissions, "#{action}_all_#{type}") or (
