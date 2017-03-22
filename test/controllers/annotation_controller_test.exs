@@ -32,4 +32,13 @@ defmodule Core.AnnotationControllerTest do
 
     assert json_response(conn, 200)
   end
+
+  test "Access to delete properly", %{annotation: annotation, jwt: jwt} do
+    conn = build_conn()
+    conn = conn
+    |> put_req_header("authorization", "Bearer #{jwt}")
+    |> delete(annotation_path(conn, :delete, annotation.id))
+
+    assert response(conn, 204)
+  end
 end
