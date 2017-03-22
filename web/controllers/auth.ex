@@ -47,9 +47,9 @@ defmodule Core.Auth do
     token = Guardian.Plug.current_token(conn)
 
     case Guardian.decode_and_verify(token) do
-      {:ok, claims} ->
+      {:ok, _} ->
         conn
-      {:error, reason} ->
+      {:error, _} ->
         conn
         |> put_status(:unauthorized)
         |> render(Core.ErrorView, "401.json", %{})

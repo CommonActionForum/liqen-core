@@ -7,7 +7,6 @@ defmodule Core.AnnotationTagController do
   plug Core.Auth, %{key: :annotation, type: "annotations"}
 
   def create(conn, tag_params) do
-    annotation = conn.assigns[:annotation]
     changeset = AnnotationTag.changeset(%AnnotationTag{}, tag_params)
 
     case Repo.insert(changeset) do
