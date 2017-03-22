@@ -3,7 +3,7 @@ defmodule Core.TagController do
   alias Core.Tag
 
   plug :find when action in [:update, :delete, :show]
-  plug Core.Auth, %{key: tag,
+  plug Core.Auth, %{key: :tag,
                     type: "tags"} when action in [:create, :update, :delete]
 
   def index(conn, _params) do

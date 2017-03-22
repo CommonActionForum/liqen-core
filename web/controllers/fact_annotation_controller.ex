@@ -2,7 +2,7 @@ defmodule Core.FactAnnotationController do
   use Core.Web, :controller
   alias Core.FactAnnotation
 
-  plug :find when
+  plug :find
   plug Core.Auth, %{key: :fact, type: "facts"}
 
   def create(conn, params) do
