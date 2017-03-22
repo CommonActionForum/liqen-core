@@ -6,8 +6,9 @@ defmodule Core.AnnotationTagController do
   plug :find
   plug Core.Auth, %{key: :annotation, type: "annotations"}
 
-  def create(conn, params) do
-    changeset = AnnotationTag.changeset(%AnnotationTag{}, params)
+  def create(conn, tag_params) do
+    annotation = conn.assigns[:annotation]
+    changeset = AnnotationTag.changeset(%AnnotationTag{}, tag_params)
 
     case Repo.insert(changeset) do
       {:ok, _annotation_tag} ->
@@ -21,8 +22,9 @@ defmodule Core.AnnotationTagController do
     end
   end
 
-  def delete(conn, %{"annotation_id" => annotation_id, "tag_id" => tag_id}) do
-    tag = Repo.get_by!(AnnotationTag, %{annotation_id: annotation_id, tag_id: tag_id})
+  def delete(conn, %{"tag_id" => tag_id}) do
+    annotation = conn.assigns[:annotation]
+    tag = Repo.get_by!(AnnotationTag, %{annotation_id: annotation.id, tag_id: tag_id})
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
