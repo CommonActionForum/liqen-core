@@ -14,7 +14,36 @@ defmodule Core.AnnotationControllerTest do
 
     {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user)
 
-    {:ok, %{annotation: annotation, jwt: jwt}}
+    {:ok, %{annotation: annotation, jwt: jwt, article: article}}
+  end
+
+  test "Create correctly", %{article: article, jwt: jwt} do
+    params = %{
+      "article_id" => article.id,
+      "target" => %{
+        "type" => "FragmentSelector",
+        "value" => "",
+        "refinedBy" => %{
+          "type" => "TextQuoteSelector",
+          "prefix" => "",
+          "exact" => "",
+          "suffix" => ""
+        }
+      }
+    }
+
+    conn = build_conn()
+    conn = conn
+    |> put_req_header("authorization", "Bearer #{jwt}")
+    |> post(annotation_path(conn, :create), params)
+
+    # Check response body
+    annotation = json_response(conn, 201)
+    assert annotation
+
+    # Check "location" header
+    assert(annotation_path(conn, :show, annotation["id"])
+      in get_resp_header(conn, "location"))
   end
 
   test "Find the proper annotation", %{annotation: annotation} do
