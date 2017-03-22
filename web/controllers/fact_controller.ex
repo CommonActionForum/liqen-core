@@ -3,7 +3,6 @@ defmodule Core.FactController do
   alias Core.Fact
 
   plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth} when action in [:create, :update, :delete]
-  plug Core.BodyParams, name: "fact"
   plug :find when action in [:update, :delete, :show]
 
   def index(conn, _params) do
@@ -13,7 +12,7 @@ defmodule Core.FactController do
     render(conn, "index.json", facts: facts)
   end
 
-  def create(conn, %{"fact" => fact_params}) do
+  def create(conn, fact_params) do
     changeset = Fact.changeset(%Fact{}, fact_params)
 
     case Repo.insert(changeset) do
@@ -33,7 +32,7 @@ defmodule Core.FactController do
     end
   end
 
-  def show(conn, %{"id" => _}) do
+  def show(conn, _) do
     fact = conn.assigns[:fact]
     |> Repo.preload(:question)
     |> Repo.preload(:annotations)
@@ -41,7 +40,7 @@ defmodule Core.FactController do
     render(conn, "show.json", fact: fact)
   end
 
-  def update(conn, %{"id" => _, "fact" => fact_params}) do
+  def update(conn, fact_params) do
     fact = conn.assigns[:fact]
     changeset = Fact.changeset(fact, fact_params)
 
@@ -59,7 +58,7 @@ defmodule Core.FactController do
     end
   end
 
-  def delete(conn, %{"id" => _}) do
+  def delete(conn, _) do
     fact = conn.assigns[:fact]
 
     # Here we use delete! (with a bang) because we expect
