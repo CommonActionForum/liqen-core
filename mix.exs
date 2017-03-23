@@ -10,7 +10,8 @@ defmodule Core.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      aliases: aliases(),
-     deps: deps()]
+     deps: deps(),
+     docs: [extras: ["README.md"]]]
   end
 
   # Configuration for the OTP application.
@@ -39,6 +40,7 @@ defmodule Core.Mixfile do
      {:gettext, "~> 0.11"},
      {:comeonin, "~> 3.0"},
      {:guardian, "~> 0.14"},
+     {:ex_doc, "~> 0.14", only: :dev, runtime: false},
      {:cowboy, "~> 1.0"}]
   end
 
