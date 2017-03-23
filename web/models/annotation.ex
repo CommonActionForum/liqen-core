@@ -1,4 +1,14 @@
 defmodule Core.Annotation do
+  @moduledoc """
+  An Annotation represents a fragment of an article with tags.
+
+  ## Fields
+
+  - `target`. The fragment of the article
+  - `article`. The article
+  - `author`. Author of the annotation
+  - `annotation_tags`. Tags of the annotation
+  """
   use Core.Web, :model
 
   schema "annotations" do
@@ -14,6 +24,18 @@ defmodule Core.Annotation do
 
   @doc """
   Builds a changeset based on the `struct` and `params`.
+
+  ## Params
+
+  - `article_id`. ID of the article that has the annotation
+  - `target`. Fragment of the article that has the annotation
+
+  This function only returns a valid changeset if:
+
+  - Both params are provided
+
+  The returned changeset also checks (when manipulating the storage) that
+  `article_id` corresponds to an article.
   """
   def changeset(struct, params \\ %{}) do
     struct

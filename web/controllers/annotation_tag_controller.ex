@@ -1,4 +1,10 @@
 defmodule Core.AnnotationTagController do
+  @moduledoc """
+  Implements a Phoenix Controller for handling the calls of the API resource
+  `annotation_tags`
+
+  See `Phoenix.Controller`
+  """
   use Core.Web, :controller
   alias Core.AnnotationTag
   alias Core.Annotation
