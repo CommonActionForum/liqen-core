@@ -30,7 +30,7 @@ defmodule Core.Annotation do
   - `article_id`. ID of the article that has the annotation
   - `target`. Fragment of the article that has the annotation
 
-  This function only returns a valid changeset if:
+  This function returns a valid changeset if:
 
   - Both params are provided
 
