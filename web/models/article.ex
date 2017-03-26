@@ -4,9 +4,11 @@ defmodule Core.Article do
 
   ## Fields
 
-  - `title`. The title of the article
-  - `body`. The body of the article
-  - `annotations`. Author of the annotation
+  Field          | Type                   |
+  :------------- | :--------------------- | :---------------------
+  `title`        | `:string`              |
+  `body`         | `:string`              |
+  `annotations`  | `has_many` association | with `Core.Annotation`
   """
   use Core.Web, :model
 
@@ -21,14 +23,9 @@ defmodule Core.Article do
   @doc """
   Builds a changeset based on the `struct` and `params`.
 
-  ## Params
+  ## Parameters
 
-  - `title`
-  - `body`
-
-  This function returns a valid changeset if:
-
-  - Both params are provided
+  Required parameters: `title`, `body`
   """
   def changeset(struct, params \\ %{}) do
     struct

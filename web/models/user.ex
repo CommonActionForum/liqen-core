@@ -1,11 +1,21 @@
 defmodule Core.User do
   @moduledoc """
-  User model. Represents a registered user.
+  A User represents a registered user.
 
-  ## Creating/editing users
+  ## Fields
 
-  Use this module to generate a changeset to check if a map has valid fields in
-  order to create or edit an user.
+  Field              | Type                   |
+  :----------------- | :--------------------- | :---------------------
+  `email`            | `:string`              |
+  `crypted_password` | `:string`              |
+  `password`         | `:string`              | virtual
+  `permissions`      | `{:array, :string}`    |
+  `role`             | `:string`              | valid values: `"beta_user"`
+  `author`           | `has_many` association | with `Core.Annotation`
+
+  Not all fields are required for creating/updating Users. For example
+  `crypted_password` which is generated from the given `password`. See
+  `changeset/2` for details.
 
   ## Permissions
 
@@ -14,23 +24,23 @@ defmodule Core.User do
 
   Depending of the syntax of a permission, that can be:
 
-  - **Permission to edit/delete the resources created by the user**. The
-    permissions have the syntax `{edit or delete}_{resource}`
+  - *Permission to edit/delete the resources created by the user*. The
+    permissions have the syntax `{edit or delete}_{resource}`.
 
     For example `edit_annotations` allow users to edit annotations whose
     `author` is the user.
 
-  - **Permission to edit/delete any resource.** The permissions have the syntax
-    `{edit or delete}_all_{resource}`
+  - *Permission to edit/delete any resource*. The permissions have the syntax
+    `{edit or delete}_all_{resource}`.
 
     For example `edit_all_annotations` allow users to edit any annotation.
 
-  - **Permission to create a resource**. The permissions have the syntax
-    `create_{resource}`
+  - *Permission to create a resource*. The permissions have the syntax
+    `create_{resource}`.
 
     For example `create_annotations` allow users to create annotations.
 
-  - **General permissions**. Permission that doesn't fit with any of the above.
+  - *General permissions*. Permission that doesn't fit with any of the above.
 
   As a convention, the permission `"super_user"` allows the user to perform any
   action.
@@ -72,16 +82,10 @@ defmodule Core.User do
 
   ## Parameters
 
-  - `email`
-  - `password`
-  - `role`. Must be "beta_user"
-
-  This function returns a valid changeset if:
-
-  - All parameters are set
-  - Role has a valid value
+  Required parameters: `email`, `password`, `role`.
 
   If the changeset is valid, this function sets some `changes`:
+
   - A field called `crypted_password` with the cyphered `password`.
   - A field called `permissions` with the permissions of the user according
     to the `role`

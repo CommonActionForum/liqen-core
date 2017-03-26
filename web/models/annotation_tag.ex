@@ -2,6 +2,13 @@ defmodule Core.AnnotationTag do
   @moduledoc """
   An AnnotationTag represents the many-to-many relationship between
   `Core.Annotation` and `Core.Tag`.
+
+  ## Fields
+
+  Field        | Type         |
+  :----------- | :----------- | :----------------
+  `annotation` | `belongs_to` | `Core.Annotation`
+  `tag`        | `belongs_to` | `Core.Tag`
   """
   use Core.Web, :model
 
@@ -13,14 +20,7 @@ defmodule Core.AnnotationTag do
   @doc """
   Builds a changeset based on the `struct` and `params`.
 
-  ## Params
-
-  - `annotation_id`. ID of the annotation
-  - `tag_id`. ID of the tag
-
-  This function returns a valid changeset if:
-
-  - Both params are provided
+  Required parameters: `annotation_id`, `tag_id`.
 
   The returned changeset also checks (when manipulating the storage) that both
   `annotation_id` and `tag_id` corresponds to a annotation and tag.
