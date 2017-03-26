@@ -1,21 +1,38 @@
 defmodule Core.Auth do
   @moduledoc """
-  Phoenix Plug and
+  This module handles user sessions, authentication and authorization.
 
-  This module is used for creating sessions and for checking user permissions.
+  1. Use the function `login/4` to start a session of a user.
+  2. To check authentication/authorization of a user, `plug` this in a
+     controller.
 
-  ## Create sessions
+  ### Authentication/authorization. Plug usage
 
-  Use the login function to create a session
+  If the User is not authenticated, the plug will halt the connection, respond
+  a `401` error and render a `"401.json"` template from `Core.ErrorView`.
 
+  If the User is authenticated but doesn't have the proper permissions, the
+  plug will halt the connection, respond a `403` error and render a `"403.json"`
+  from `Core.ErrorView`.
 
-  ## Use as Plug to verify user permissions
+  #### Options
+
+  Options must be passed to the plug using a map with the fields:
+
+  - `key`. The plug will retrieve the resource `from conn.assigns[key]`
+  - `type`. The name of the resource. See `Core.User.can?/3` and
+    `Core.User.can?/4`
+
+  #### Usage example
+
+  This checks permissions for the resource "annotations", which object is
+  located in `conn.assgins.annotation`
 
   ```
-  plug Core.Auth %{key: :annotation,
-                   type: "annotations"}
+  plug Core.Auth, %{key: :annotation, type: "annotations"}
   ```
   """
+  @behaviour Plug
   use Core.Web, :controller
 
   import Plug.Conn
@@ -24,13 +41,14 @@ defmodule Core.Auth do
   alias Core.User
 
   @doc """
-  Init function of the Plug
+  Implements `c:Plug.init/1`
   """
   def init(opts), do: opts
 
   @doc """
-  Call function of the Plug
+  Implements `c:Plug.call/2`
   """
+  def call(conn, opts)
   def call(conn, %{key: key, type: type}) do
     call(conn, %{resource: conn.assigns[key],
                  type: type,
@@ -77,8 +95,26 @@ defmodule Core.Auth do
     end
   end
 
+  # TODO
+  # Remove this function from here
+  # Put in SessionController
+
   @doc """
-  Try to authenticate an user and if success, starts a session for him
+  Tries to authenticate a user and if success, starts a session for them
+
+  ## Parameters
+
+  - `conn`. A `Plug.Conn.t` object
+  - `email`. The e-mail input
+  - `pass`. The password input
+  - `opts`. Map with options:
+    - `repo`. Object used to retrieve the user real e-mail/password
+
+  ## Returns
+
+  - If login is successful, returns the `{:ok, conn}` tuple, where `conn` has
+    `assign`-ed a `session`-like map with the user object, the JWT token and
+    the expiration data
   """
   def login(conn, email, pass, opts) do
     repo = Keyword.fetch!(opts, :repo)

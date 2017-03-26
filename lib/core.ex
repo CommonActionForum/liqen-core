@@ -1,4 +1,8 @@
 defmodule Core do
+  @moduledoc """
+  A module for working with applications and defining application callbacks.
+  See `Application`
+  """
   use Application
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
