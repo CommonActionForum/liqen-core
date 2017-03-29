@@ -14,7 +14,9 @@ defmodule Core.Article do
 
   schema "articles" do
     field :title, :string
-    field :body, :string
+    field :body, Core.ArticleBody
+    field :source_uri, :string
+    field :source_target, Core.Target
     has_many :annotations, Core.Annotation
 
     timestamps()
@@ -29,7 +31,7 @@ defmodule Core.Article do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:title, :body])
-    |> validate_required([:title, :body])
+    |> cast(params, [:title, :body, :source_uri, :source_target])
+    |> validate_required([:title, :source_uri, :source_target])
   end
 end

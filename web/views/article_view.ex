@@ -17,6 +17,7 @@ defmodule Core.ArticleView do
   def render("article.json", %{article: article}) do
     %{id: article.id,
       title: article.title,
-      body: article.body}
+      source: %{uri: article.source_uri,
+                target: article.source_target}}
   end
 end
