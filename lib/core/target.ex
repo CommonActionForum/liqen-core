@@ -5,19 +5,19 @@ defmodule Core.Target do
   def type, do: :map
 
   def cast(target = %{"type" => "TextQuoteSelector",
-                      "prefix" => prefix,
-                      "exact" => exact,
-                      "suffix" => suffix}), do: {:ok, target}
-  def cast(target = %{"type" => type
-                      "value" => value,
+                      "prefix" => _,
+                      "exact" => _,
+                      "suffix" => _}), do: {:ok, target}
+  def cast(target = %{"type" => type,
+                      "value" => _,
                       "refinedBy" => refinedBy}) when type in @valid_types do
     case cast(refinedBy) do
       :error -> :error
       {:ok, _} -> {:ok, target}
     end
   end
-  def cast(target = %{"type" => type
-                      "value" => value}) when type in @valid_types do
+  def cast(target = %{"type" => type,
+                      "value" => _}) when type in @valid_types do
       {:ok, target}
   end
 
