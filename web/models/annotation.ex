@@ -43,4 +43,28 @@ defmodule Core.Annotation do
     |> validate_required([:article_id, :target])
     |> foreign_key_constraint(:article_id)
   end
+
+  @doc """
+  Builds a query based on the parameters.
+
+  ## Parameters
+
+  - `article_id`. Filter annotations by article (article ID).
+  - `author`. Filter annotations by author (user ID)
+  """
+  def query(params) do
+    query = from a in __MODULE__, select: a
+
+    query = case Map.fetch(params, "article_id") do
+      :error -> query
+      {:ok, article_id} ->
+                from a in query, where: a.article_id == ^article_id
+    end
+
+    query = case Map.fetch(params, "author") do
+      :error -> query
+      {:ok, author} ->
+                from a in query, where: a.author == ^author
+    end
+  end
 end
