@@ -23,13 +23,7 @@ defmodule Core.AnnotationView do
     %{id: annotation.id,
       article_id: annotation.article_id,
       author: annotation.author,
-      target: %{
-        type: target.type,
-        value: target.value,
-        refinedBy: %{type: "TextQuoteSelector",
-                     prefix: target.prefix,
-                     exact: target.exact,
-                     suffix: target.suffix}},
+      target: annotation.target,
       tags: tags}
   end
 end
