@@ -15,8 +15,10 @@ defmodule Core.AnnotationController do
   @doc """
   Renders a list of all the annotations
   """
-  def index(conn, _params) do
-    annotations = Repo.all(Annotation)
+  def index(conn, params) do
+    query = Annotation.query(params)
+    annotations = Repo.all(query)
+
     render(conn, "index.json", annotations: annotations)
   end
 
