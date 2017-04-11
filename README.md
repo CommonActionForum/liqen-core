@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/exacs/liqen-core.svg?branch=master)](https://travis-ci.org/exacs/liqen-core)
+[![Coverage Status](https://coveralls.io/repos/github/exacs/liqen-core/badge.svg?branch=master)](https://coveralls.io/github/exacs/liqen-core?branch=master)
+
 # Liqen Core
 
 The Core of Liqen implemented using the Phoenix Framework.
