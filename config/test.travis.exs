@@ -14,7 +14,7 @@ config :core, Core.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "",
-  database: "core_test",
+  database: "travis_ci_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 

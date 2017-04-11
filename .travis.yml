@@ -14,6 +14,8 @@ services:
 
 before_script:
   - cp config/test.travis.exs config/test.exs
+  - psql -c 'create database travis_ci_test;' -U postgres
+  - mix do ecto.create, ecto.migrate
 
 script:
   - "MIX_ENV=test mix do deps.get, compile, coveralls.travis"
