@@ -20,10 +20,7 @@ env:
   - MIX_ENV=test
 
 script:
-  - mix do deps.get, compile, coveralls.json
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - mix do deps.get, compile, coveralls.travis
 
 notifications:
   slack:
