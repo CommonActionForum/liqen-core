@@ -11,7 +11,9 @@ defmodule Core.Mixfile do
      start_permanent: Mix.env == :prod,
      aliases: aliases(),
      deps: deps(),
-     docs: [extras: ["README.md"]]]
+     docs: [extras: ["README.md"]],
+     test_coverage: [tool: ExCoveralls],
+     preferred_cli_env: [coveralls: :test]]
   end
 
   # Configuration for the OTP application.
@@ -41,6 +43,7 @@ defmodule Core.Mixfile do
      {:comeonin, "~> 3.0"},
      {:guardian, "~> 0.14"},
      {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+     {:excoveralls, "~> 0.6", only: :test},
      {:cowboy, "~> 1.0"}]
   end
 
