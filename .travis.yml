@@ -6,7 +6,7 @@ otp_release:
   - 18.3
 
 addons:
-  postgresql: "9.4"
+  postgresql: '9.4'
 
 services:
   - postgresql
@@ -18,5 +18,13 @@ before_script:
 
 env:
   - MIX_ENV=test
+
 script:
-  - mix do deps.get, compile, coveralls.travis
+  - mix do deps.get, compile, coveralls.json
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+notifications:
+  slack:
+    secure: ESEZqU5oOAh67DxtxQaN/677swSqHWcUiaWZuiF1vNyel5bR57mdKn2bR9mzBWKzPt/vxA67zz1kBoN14yOSZekOw8fTYFt0B50L0n29qX3mvwj6tAaHtrVxJROh6XNKYD0QsEyo5wsN0Yvr+UjmMgT3bmUKNZk65ChDUyJHj3lBGqhM7k2b3ctSNI3GT18t6pXtrKg283yQ5J2EhKZaj81j7Gp1f0ZiN8JvIYOgiV0BFx7zAqwLXepNcqBuu5qKJJ0R754AIE7jkjcyYvBha5ts/8dAZgWUSXtB1a+NduOGYdh/Or83NUJm3/Ik1LFuG91ceQK12Y/JIX1XQ3msaNF/NSm67VhxI+moJNkCRAP0DRp0o0LjOfKvi4Ct4eldMU/QK5IIQQyn2K2Eq33faDDagql8MxhXJ6NFOQTeJj14vo01L74X4EVcBiJQgzqAfK6KoUo82RyClUxbIV65zKqDRtxCKHvcBtqwWu6dqxpXqePEO7TY1DH8Jo5O3jCssMjoJjQpbh1zvX2MMSgtM11AeNCG3Ofk3DHaww2c/zY7g+Q4g5favpZ+0HafcfMzvva/KybyL6CuW2UnnLHh4fAsQuWDvFmxR6fJtVx+F0V8A5OqNHEGgRTZnGIkQVDkvjxP+2oKranh5nfVzMLsYqZ3uNyOmG/ECT3/QvhIUVc=
