@@ -21,6 +21,21 @@ defmodule Core.UserController do
     end
   end
 
+  def show(conn, %{"id" => id}) do
+    user = Guardian.Plug.current_resource(conn)
+
+    if Repo.get(User, id) == user do
+      conn
+      |> put_status(:ok)
+      |> render(Core.UserView, "show.json", user: user)
+
+    else
+      conn
+      |> put_status(:forbidden)
+      |> render(Core.ErrorView, "403.json", %{})
+    end
+  end
+
   defp authorize(conn, _opts) do
     user = Guardian.Plug.current_resource(conn)
 
