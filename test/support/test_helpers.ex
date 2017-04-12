@@ -63,4 +63,12 @@ defmodule Core.TestHelpers do
     |> Core.Annotation.changeset(changes)
     |> Repo.insert!()
   end
+
+  def insert_fact(attrs \\ %{}) do
+    changes = Map.merge(%{question_id: 0}, attrs)
+
+    %Core.Fact{}
+    |> Core.Fact.changeset(changes)
+    |> Repo.insert!()
+  end
 end
