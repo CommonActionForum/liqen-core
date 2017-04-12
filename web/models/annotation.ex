@@ -56,15 +56,15 @@ defmodule Core.Annotation do
     query = from a in __MODULE__, select: a
 
     query = case Map.fetch(params, "article_id") do
-      :error -> query
-      {:ok, article_id} ->
+              :error -> query
+              {:ok, article_id} ->
                 from a in query, where: a.article_id == ^article_id
-    end
+            end
 
     query = case Map.fetch(params, "author") do
-      :error -> query
-      {:ok, author} ->
+              :error -> query
+              {:ok, author} ->
                 from a in query, where: a.author == ^author
-    end
+            end
   end
 end
