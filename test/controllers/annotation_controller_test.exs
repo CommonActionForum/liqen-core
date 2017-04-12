@@ -75,8 +75,8 @@ defmodule Core.AnnotationControllerTest do
 
   test "Resource not found", %{conn: conn} do
     conn1 = get(conn, annotation_path(conn, :show, 0))
-    conn2 = get(conn, annotation_path(conn, :update, 0, %{}))
-    conn3 = get(conn, annotation_path(conn, :delete, 0))
+    conn2 = put(conn, annotation_path(conn, :update, 0, %{}))
+    conn3 = delete(conn, annotation_path(conn, :delete, 0))
 
     assert json_response(conn1, :not_found)
     assert json_response(conn2, :not_found)
