@@ -41,7 +41,9 @@ defmodule Core.TestHelpers do
 
   def insert_article(attrs \\ %{}) do
     changes = Map.merge(%{title: "Example article",
-                          body: "Example body"}, attrs)
+                          source_target: %{"type" => "XPathSelector",
+                                           "value" => "html"},
+                          source_uri: "http://www.example.com"}, attrs)
 
     %Core.Article{}
     |> Core.Article.changeset(changes)
