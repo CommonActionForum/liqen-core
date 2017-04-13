@@ -39,6 +39,15 @@ defmodule Core.TestHelpers do
     |> Repo.insert!()
   end
 
+  def insert_question_tag(attrs \\ %{}) do
+    changes = Map.merge(%{question_id: 0,
+                          tag_id: 0}, attrs)
+
+    %Core.QuestionTag{}
+    |> Core.QuestionTag.changeset(changes)
+    |> Repo.insert!()
+  end
+
   def insert_article(attrs \\ %{}) do
     changes = Map.merge(%{title: "Example article",
                           source_target: %{"type" => "XPathSelector",
