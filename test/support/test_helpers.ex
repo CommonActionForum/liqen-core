@@ -73,6 +73,15 @@ defmodule Core.TestHelpers do
     |> Repo.insert!()
   end
 
+  def insert_annotation_tag(attrs \\ %{}) do
+    changes = Map.merge(%{annotation_id: 0,
+                          tag_id: 0}, attrs)
+
+    %Core.AnnotationTag{}
+    |> Core.AnnotationTag.changeset(changes)
+    |> Repo.insert!()
+  end
+
   def insert_fact(attrs \\ %{}) do
     changes = Map.merge(%{question_id: 0}, attrs)
 
