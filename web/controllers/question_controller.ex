@@ -16,6 +16,9 @@ defmodule Core.QuestionController do
 
     case Repo.insert(changeset) do
       {:ok, question} ->
+        question = question
+        |> Repo.preload(:question_tags)
+
         conn
         |> put_status(:created)
         |> put_resp_header("location", question_path(conn, :show, question))
@@ -40,6 +43,9 @@ defmodule Core.QuestionController do
 
     case Repo.update(changeset) do
       {:ok, question} ->
+        question = question
+        |> Repo.preload(:question_tags)
+
         render(conn, "show.json", question: question)
       {:error, changeset} ->
         conn

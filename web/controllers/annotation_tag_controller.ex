@@ -27,7 +27,7 @@ defmodule Core.AnnotationTagController do
     end
   end
 
-  def delete(conn, %{"tag_id" => tag_id}) do
+  def delete(conn, %{"id" => tag_id}) do
     annotation = conn.assigns[:annotation]
     tag = Repo.get_by!(AnnotationTag, %{annotation_id: annotation.id, tag_id: tag_id})
 

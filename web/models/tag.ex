@@ -4,8 +4,8 @@ defmodule Core.Tag do
   schema "tags" do
     field :title, :string
 
-    many_to_many :annotations, Core.Annotation, join_through: "annotations_tags"
-    many_to_many :questions, Core.Question, join_through: "questions_tags"
+    many_to_many :annotations, Core.Annotation, join_through: Core.AnnotationTag
+    many_to_many :questions, Core.Question, join_through: Core.QuestionTag
 
     timestamps()
   end

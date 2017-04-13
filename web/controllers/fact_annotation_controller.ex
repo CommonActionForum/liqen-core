@@ -1,6 +1,7 @@
 defmodule Core.FactAnnotationController do
   use Core.Web, :controller
   alias Core.FactAnnotation
+  alias Core.Fact
 
   plug :find
   plug Core.Auth, %{key: :fact, type: "facts"}
@@ -20,8 +21,8 @@ defmodule Core.FactAnnotationController do
     end
   end
 
-  def delete(conn, %{"annotation_id" => annotation_id}) do
-    fact = conn.assigns[:annotation]
+  def delete(conn, %{"id" => annotation_id}) do
+    fact = conn.assigns[:fact]
     annotation = Repo.get_by!(FactAnnotation, %{fact_id: fact.id, annotation_id: annotation_id})
 
     # Here we use delete! (with a bang) because we expect
