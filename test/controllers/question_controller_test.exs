@@ -24,7 +24,8 @@ defmodule Core.QuestionControllerTest do
 
   test "Create a question", %{conn: conn} do
     conn1 = conn
-    |> post(question_path(conn, :create), %{"title" => "x"})
+    |> post(question_path(conn, :create), %{"title" => "x",
+                                           "tags" => []})
 
     conn2 = conn
     |> post(question_path(conn, :create), %{"title" => ""})
