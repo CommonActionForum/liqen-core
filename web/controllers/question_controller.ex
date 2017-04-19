@@ -1,6 +1,7 @@
 defmodule Core.QuestionController do
   use Core.Web, :controller
   alias Core.Question
+  alias Core.QuestionTag
 
   plug :find when action in [:update, :delete, :show]
   plug Core.Auth, %{key: :question,
@@ -14,15 +15,16 @@ defmodule Core.QuestionController do
   def create(conn, question_params) do
     changeset = Question.changeset(%Question{}, question_params)
 
-    case Repo.insert(changeset) do
-      {:ok, question} ->
+    case insert_question_and_tags(changeset) do
+      {:ok, question, tags} ->
         question = question
-        |> Repo.preload(:question_tags)
+        |> Map.put(:tags, tags)
 
         conn
         |> put_status(:created)
         |> put_resp_header("location", question_path(conn, :show, question))
         |> render("show.json", question: question)
+
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -75,5 +77,45 @@ defmodule Core.QuestionController do
         conn
         |> assign(:question, question)
     end
+  end
+
+  defp insert_question_and_tags(changeset) do
+    Repo.transaction(fn ->
+      case (Repo.insert(changeset) |> insert_tags(changeset.tags)) do
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+        {:ok, question, tags} ->
+          {:ok, question, tags}
+      end
+    end)
+  end
+
+  defp insert_tags({:error, changeset}, _), do: {:error, changeset}
+  defp insert_tags({:ok, question}, tags_id) do
+    tag_id_to_changeset = fn tag ->
+      QuestionTag.changeset(%{"tag_id" => tag.id,
+                              "question_id" => question.id,
+                              "required" => tag.required})
+    end
+
+    insert_changeset = fn
+      (_changeset, {:error, x}) ->
+        {:error, x}
+
+      (changeset = %{valid?: valid}, {:ok, _question, _tags}) when not valid ->
+        {:error, changeset}
+
+      (changeset, {:ok, question, tags}) ->
+        case Repo.insert(changeset) do
+          {:ok, tag} ->
+            {:ok, question, [tag|tags]}
+
+          {:error, changeset} ->
+            {:error, changeset}
+        end
+    end
+
+    Enum.map(tags_id, tag_id_to_changeset)
+    |> Enum.reduce({:ok, question, []}, insert_changeset)
   end
 end
