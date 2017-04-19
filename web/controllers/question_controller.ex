@@ -16,9 +16,9 @@ defmodule Core.QuestionController do
     changeset = Question.changeset(%Question{}, question_params)
 
     case insert_question_and_tags(changeset) do
-      {:ok, question, tags} ->
+      {:ok, question} ->
         question = question
-        |> Map.put(:tags, tags)
+        |> Repo.preload(:question_tags)
 
         conn
         |> put_status(:created)
@@ -41,7 +41,11 @@ defmodule Core.QuestionController do
 
   def update(conn, question_params) do
     question = conn.assigns[:question]
-    changeset = Question.changeset(question, question_params)
+    |> Repo.preload(:question_tags)
+
+    changeset = Question.changeset(
+      Map.merge(question, %{tags: question.question_tags}),
+      question_params)
 
     case Repo.update(changeset) do
       {:ok, question} ->
@@ -81,21 +85,19 @@ defmodule Core.QuestionController do
 
   defp insert_question_and_tags(changeset) do
     Repo.transaction(fn ->
-      case (Repo.insert(changeset) |> insert_tags(changeset.tags)) do
+      case (Repo.insert(changeset) |> insert_tags(changeset)) do
         {:error, changeset} ->
           Repo.rollback(changeset)
         {:ok, question, tags} ->
-          {:ok, question, tags}
+          Map.merge(question, %{tags: tags})
       end
     end)
   end
 
   defp insert_tags({:error, changeset}, _), do: {:error, changeset}
-  defp insert_tags({:ok, question}, tags_id) do
+  defp insert_tags({:ok, question}, %{changes: changes}) do
     tag_id_to_changeset = fn tag ->
-      QuestionTag.changeset(%{"tag_id" => tag.id,
-                              "question_id" => question.id,
-                              "required" => tag.required})
+      QuestionTag.changeset(Map.merge(tag, %{"question_id" => question.id}))
     end
 
     insert_changeset = fn
@@ -115,7 +117,7 @@ defmodule Core.QuestionController do
         end
     end
 
-    Enum.map(tags_id, tag_id_to_changeset)
+    Enum.map(changes.tags, tag_id_to_changeset)
     |> Enum.reduce({:ok, question, []}, insert_changeset)
   end
 end
