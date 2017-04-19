@@ -64,7 +64,7 @@ defmodule Core.AuthTest do
     |> put_req_header("accept", "application/json")
     |> put_req_header("authorization", "Bearer #{jwt}")
     |> get("/")
-    |> Auth.call(%{resource: %{}, type: "annotations", action: :create})
+    |> Auth.call(%{resource: nil, type: "annotations", action: :create})
 
     refute conn.halted
   end
