@@ -3,6 +3,7 @@ defmodule Core.Question do
 
   schema "questions" do
     field :title, :string
+    field :tags, {:array, :map}, virtual: true
 
     many_to_many :question_tags, Core.Tag, join_through: Core.QuestionTag
 
@@ -14,7 +15,7 @@ defmodule Core.Question do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:title])
-    |> validate_required([:title])
+    |> cast(params, [:title, :tags])
+    |> validate_required([:title, :tags])
   end
 end
