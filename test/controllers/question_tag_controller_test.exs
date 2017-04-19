@@ -19,13 +19,14 @@ defmodule Core.QuestionTagControllerTest do
     question = insert_question()
     tag = insert_tag()
 
-    params = %{"tag_id" => tag.id}
+    params = %{"tag_id" => tag.id,
+               "required" => false}
 
     conn1 = conn
     |> post(question_question_tag_path(conn, :create, question.id), params)
 
     conn2 = conn
-    |> post(question_question_tag_path(conn, :create, question.id), %{"tag_id" => 0})
+    |> post(question_question_tag_path(conn, :create, question.id), %{"tag_id" => 0, "required" => true})
 
     assert json_response(conn1, :created)
     assert json_response(conn2, :unprocessable_entity)

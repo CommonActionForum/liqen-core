@@ -6,10 +6,11 @@ defmodule Core.QuestionTagController do
   plug :find
   plug Core.Auth, %{key: :question, type: "questions"}
 
-  def create(conn, %{"tag_id" => tag_id}) do
+  def create(conn, %{"tag_id" => tag_id, "required" => required}) do
     question = conn.assigns[:question]
     changeset = QuestionTag.changeset(%QuestionTag{}, %{"question_id" => question.id,
-                                                        "tag_id" => tag_id})
+                                                        "tag_id" => tag_id,
+                                                        "required" => required})
 
     case Repo.insert(changeset) do
       {:ok, _question_tag} ->
