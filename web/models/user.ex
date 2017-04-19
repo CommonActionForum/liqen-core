@@ -118,6 +118,7 @@ defmodule Core.User do
           case role do
             "root" -> ["super_user"]
             "beta_user" -> [
+              "show_users",
               "create_facts",
               "read_facts",
               "update_facts",
