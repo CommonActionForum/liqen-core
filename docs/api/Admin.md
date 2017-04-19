@@ -32,5 +32,30 @@ Create a new user giving its e-mail and password.
 ## POST /articles
 ## DELETE /articles/:id
 ## POST /questions
+
+Create a new question
+
+#### Example request
+
+```json
+{
+    "title": "¿Cuál es la dinámica de las personas altamente cualificadas?",
+    "answer": [
+        {
+            "tag": 1,
+            "required": true
+        },
+        {
+            "tag": 2,
+            "required": true
+        },
+        {
+            "tag": 3,
+            "required": true
+        }
+    ]
+}
+```
+
 ## PUT /questions/:id
 ## DELETE /questions/:id
