@@ -4,7 +4,7 @@ To perform some operations, an access token will be needed. It allows you to mak
 
 ## A note on Authentication
 
-> TL;DR: 401 = you need another token; 403 = the action is forbidden
+> TL;DR: 401 = you need another token; 403 = the action is forbidden for you
 
 Having an access token doesn't guarantee that all operations can be performed. Some requests are limited to certain users.
 
@@ -12,9 +12,9 @@ Depending on the response, you can guess what is the reason of the rejection. If
 
 ## Obtain the access token
 
-`POST /sessions`
+Send your account data (e-mail and password) to the endpoint and get the access token.
 
-If the e-mail and password pair are correct, an access token will be retrieved along with some data of the user.
+`POST /sessions`
 
 ### Parameters
 
