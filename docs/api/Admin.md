@@ -58,4 +58,32 @@ Create a new question
 ```
 
 ## PUT /questions/:id
+
+Edit a question
+
+#### Example request 1. Changing the title
+
+```json
+{
+    "title": "Who is the writer of El Quijote"
+}
+```
+
+#### Example request 2. Changing expected answer
+
+```json
+{
+    "answer": [
+        {
+            "tag": 1,
+            "required": false
+        }
+    ]
+}
+```
+
+The change only will be performed if all tags exist.
+
+Note that changing the expected answer can cause several side-effects. Valid Liqs can become invalid ones.
+
 ## DELETE /questions/:id
