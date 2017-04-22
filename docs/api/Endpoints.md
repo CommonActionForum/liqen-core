@@ -22,7 +22,50 @@ Retrieve the information of an user giving its ID. The user in the access token 
 ## GET /articles/:id
 ## GET /annotations
 ## GET /annotations/:id
+## POST /annotations
+
+Create a new Annotation
+
+#### Example request
+
+```json
+{
+    "article_id": 3,
+    "target": {
+        "type": "FragmentSelector",
+        "value": "id1"
+    },
+    "tags": [1]
+}
+```
+
 ## PATCH /annotations/:id
+
+Edit an annotation.
+
+#### Example request 1. Editing the target
+
+```json
+{
+    "target": {
+        "type": "CssSelector",
+        "value": "p",
+        "refinedBy": {
+            "type": "FragmentSelector",
+            "value": "id1"
+        }
+    }
+}
+```
+
+#### Example request 2. Editing the tag list
+
+```json
+{
+    "tags": [1, 2]
+}
+```
+
 ## DELETE /annotations/:id
 ## GET /questions
 ## GET /questions/:id
