@@ -62,8 +62,8 @@ Retrieve the information of a given question.
 }
 ```
 
-## GET /leeqs
-## GET /leeqs/:id
-## POST /leeqs
-## PATCH /leeqs/:id
-## DELETE /leeqs/:id
+## GET /facts
+## GET /facts/:id
+## POST /facts
+## PATCH /facts/:id
+## DELETE /facts/:id
