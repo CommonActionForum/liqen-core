@@ -107,6 +107,30 @@ Retrieve the information of a given question.
 
 ## GET /facts
 ## GET /facts/:id
+
+Retrieve a Fact
+
+#### Example of successful (**200**) response
+
+```json
+{
+    "id": 7,
+    "question_id": 3,
+    "annotations": [
+        {
+            "id": 3,
+            "article": 1,
+            "target": {
+                "type" : "CssSelector",
+                "value" : "p"
+            },
+            "tags": [1, 2],
+        }
+    ],
+    "complete": true
+}
+```
+
 ## POST /facts
 ## PATCH /facts/:id
 ## DELETE /facts/:id
