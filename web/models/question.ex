@@ -24,6 +24,9 @@ defmodule Core.Question do
     end)
   end
 
+  defp validate_tag(%{"tag" => tag, "required" => required}) do
+    validate_tag(%{tag: tag, required: required})
+  end
   defp validate_tag(%{tag: tag, required: required}) do
     :ok
   end
