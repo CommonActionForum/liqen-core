@@ -132,5 +132,36 @@ Retrieve a Fact
 ```
 
 ## POST /facts
+
+Creates a new Fact.
+
+```json
+{
+    "question_id": 1,
+    "annotations": [3, 2]
+}
+```
+
 ## PATCH /facts/:id
+
+Modifies a Fact
+
+#### Example request 1. Editing the question
+
+```json
+{
+    "question_id": 1
+}
+```
+
+#### Example request 1. Editing the annotations
+
+```json
+{
+    "annotations": [3, 2]
+}
+```
+
 ## DELETE /facts/:id
+
+Deletes a Fact
