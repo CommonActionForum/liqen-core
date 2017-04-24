@@ -17,11 +17,11 @@ defmodule Core.FactController do
   def create(conn, fact_params) do
     changeset = Fact.changeset(%Fact{}, fact_params)
 
-    case Repo.insert(changeset) do
+    case insert_fact_and_annotations(changeset) do
       {:ok, fact} ->
         fact = fact
         |> Repo.preload(:question)
-        |> Repo.preload(:annotations)
+        |> Repo.preload(:fact_annotations)
 
         conn
         |> put_status(:created)
@@ -37,20 +37,22 @@ defmodule Core.FactController do
   def show(conn, _) do
     fact = conn.assigns[:fact]
     |> Repo.preload(:question)
-    |> Repo.preload(:annotations)
+    |> Repo.preload(:fact_annotations)
 
     render(conn, "show.json", fact: fact)
   end
 
   def update(conn, fact_params) do
     fact = conn.assigns[:fact]
+    |> Repo.preload(:fact_annotations)
+
     changeset = Fact.changeset(fact, fact_params)
 
-    case Repo.update(changeset) do
+    case update_fact_and_annotations(changeset) do
       {:ok, fact} ->
         fact = fact
         |> Repo.preload(:question)
-        |> Repo.preload(:annotations)
+        |> Repo.preload(:fact_annotations)
 
         render(conn, "show.json", fact: fact)
       {:error, changeset} ->
@@ -88,7 +90,7 @@ defmodule Core.FactController do
       case (Repo.insert(changeset) |> insert_annotations(changeset)) do
         {:error, changeset} ->
           Repo.rollback(changeset)
-        {:ok, fact} ->
+        {:ok, fact, annotations} ->
           fact
       end
     end)
@@ -99,7 +101,7 @@ defmodule Core.FactController do
       case (Repo.update(changeset) |> remove_annotations(changeset) |> insert_annotations(changeset)) do
         {:error, changeset} ->
           Repo.rollback(changeset)
-        {:ok, fact} ->
+        {:ok, fact, annotations} ->
           fact
       end
     end)
@@ -108,12 +110,12 @@ defmodule Core.FactController do
   defp insert_annotations({:error, changeset}, _), do: {:error, changeset}
   defp insert_annotations({:ok, fact}, changeset) do
     Ecto.Changeset.get_field(changeset, :annotations)
-    |> Enum.map(create_changeset(fact_id))
-    |> Enum.reduce(&insert_annotation/2)
+    |> Enum.map(create_changeset(fact.id))
+    |> Enum.reduce({:ok, fact, []}, &insert_annotation/2)
   end
 
   defp remove_annotations({:error, changeset}, _), do: {:error, changeset}
-  defp remove_annotations({:ok, fact}, changeset) do
+  defp remove_annotations({:ok, fact}, _) do
     query = from(fa in FactAnnotation, where: fa.fact_id == ^fact.id)
 
     Repo.delete_all(query)
