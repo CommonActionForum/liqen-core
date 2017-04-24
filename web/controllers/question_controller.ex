@@ -17,13 +17,13 @@ defmodule Core.QuestionController do
 
     case insert_question_and_tags(changeset) do
       {:ok, question} ->
-        question = question
-        |> Repo.preload(:question_tags)
+        answer = Repo.all(from(qt in QuestionTag, where: qt.question_id == ^question.id))
+        question = Map.merge(question, %{answer: answer})
 
         conn
         |> put_status(:created)
         |> put_resp_header("location", question_path(conn, :show, question))
-        |> render("show.json", question: question)
+        |> render("show.json", %{question: question})
 
       {:error, changeset} ->
         conn
@@ -34,9 +34,10 @@ defmodule Core.QuestionController do
 
   def show(conn, _) do
     question = conn.assigns[:question]
-    |> Repo.preload(:question_tags)
+    answer = Repo.all(from(qt in QuestionTag, where: qt.question_id == ^question.id))
+    question = Map.merge(question, %{answer: answer})
 
-    render(conn, "show.json", question: question)
+    render(conn, "show.json", %{question: question})
   end
 
   def update(conn, question_params) do
@@ -44,15 +45,15 @@ defmodule Core.QuestionController do
     |> Repo.preload(:question_tags)
 
     changeset = Question.changeset(
-      Map.merge(question, %{tags: question.question_tags}),
+      Map.merge(question, %{answer: question.question_tags}),
       question_params)
 
-    case Repo.update(changeset) do
+    case update_question_and_tags(changeset) do
       {:ok, question} ->
-        question = question
-        |> Repo.preload(:question_tags)
+        answer = Repo.all(from(qt in QuestionTag, where: qt.question_id == ^question.id))
+        question = Map.merge(question, %{answer: answer})
 
-        render(conn, "show.json", question: question)
+        render(conn, "show.json", %{question: question})
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -94,10 +95,23 @@ defmodule Core.QuestionController do
     end)
   end
 
+  defp update_question_and_tags(changeset) do
+    Repo.transaction(fn ->
+      case (Repo.update(changeset) |> remove_tags(changeset) |> insert_tags(changeset)) do
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+        {:ok, question, tags} ->
+          Map.merge(question, %{tags: tags})
+      end
+    end)
+  end
+
   defp insert_tags({:error, changeset}, _), do: {:error, changeset}
-  defp insert_tags({:ok, question}, %{changes: changes}) do
-    tag_id_to_changeset = fn tag ->
-      QuestionTag.changeset(Map.merge(tag, %{"question_id" => question.id}))
+  defp insert_tags({:ok, question}, changeset) do
+    tag_id_to_changeset = fn answer ->
+      QuestionTag.changeset(%QuestionTag{}, %{"tag_id" => answer["tag"],
+                                              "required" => answer["required"],
+                                              "question_id" => question.id})
     end
 
     insert_changeset = fn
@@ -117,7 +131,15 @@ defmodule Core.QuestionController do
         end
     end
 
-    Enum.map(changes.tags, tag_id_to_changeset)
+    Enum.map(Ecto.Changeset.get_field(changeset, :answer), tag_id_to_changeset)
     |> Enum.reduce({:ok, question, []}, insert_changeset)
+  end
+
+  defp remove_tags({:error, changeset}, _), do: {:error, changeset}
+  defp remove_tags({:ok, question}, _) do
+    query = from(qt in QuestionTag, where: qt.question_id == ^question.id)
+    Repo.delete_all(query)
+
+    {:ok, question}
   end
 end
