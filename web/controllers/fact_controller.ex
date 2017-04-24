@@ -46,6 +46,8 @@ defmodule Core.FactController do
     fact = conn.assigns[:fact]
     |> Repo.preload(:fact_annotations)
 
+    fact = Map.merge(fact, %{annotations: fact.fact_annotations })
+
     changeset = Fact.changeset(fact, fact_params)
 
     case update_fact_and_annotations(changeset) do
