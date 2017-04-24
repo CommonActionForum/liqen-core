@@ -1,6 +1,7 @@
 defmodule Core.FactController do
   use Core.Web, :controller
   alias Core.Fact
+  alias Core.FactAnnotation
 
   plug :find when action in [:update, :delete, :show]
   plug Core.Auth, %{key: :fact,
@@ -79,6 +80,66 @@ defmodule Core.FactController do
       fact ->
         conn
         |> assign(:fact, fact)
+    end
+  end
+
+  defp insert_fact_and_annotations(changeset) do
+    Repo.transaction(fn ->
+      case (Repo.insert(changeset) |> insert_annotations(changeset)) do
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+        {:ok, fact} ->
+          fact
+      end
+    end)
+  end
+
+  defp update_fact_and_annotations(changeset) do
+    Repo.transaction(fn ->
+      case (Repo.update(changeset) |> remove_annotations(changeset) |> insert_annotations(changeset)) do
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+        {:ok, fact} ->
+          fact
+      end
+    end)
+  end
+
+  defp insert_annotations({:error, changeset}, _), do: {:error, changeset}
+  defp insert_annotations({:ok, fact}, changeset) do
+    Ecto.Changeset.get_field(changeset, :annotations)
+    |> Enum.map(create_changeset(fact_id))
+    |> Enum.reduce(&insert_annotation/2)
+  end
+
+  defp remove_annotations({:error, changeset}, _), do: {:error, changeset}
+  defp remove_annotations({:ok, fact}, changeset) do
+    query = from(fa in FactAnnotation, where: fa.fact_id == ^fact.id)
+
+    Repo.delete_all(query)
+    {:ok, fact}
+  end
+
+  defp create_changeset(fact_id), do: fn (annotation_id) ->
+    params = %{"annotation_id" => annotation_id,
+               "fact_id" => fact_id}
+
+    FactAnnotation.changeset(%FactAnnotation{}, params)
+  end
+
+  defp insert_annotation(_, {:error, changeset}) do
+    {:error, changeset}
+  end
+  defp insert_annotation(changeset = %{valid?: valid}, {:ok, _, _}) when not valid do
+    {:error, changeset}
+  end
+  defp insert_annotation(changeset, {:ok, fact, annotations}) do
+    case Repo.insert(changeset) do
+      {:ok, annotation} ->
+        {:ok, fact, [annotation|annotations]}
+
+      {:error, changeset} ->
+        {:error, changeset}
     end
   end
 end
