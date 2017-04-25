@@ -1,6 +1,6 @@
 # Endpoints
 
-Here are described all 17 endpoints of the API. All `GET` operations except `GET /users/:id` can be performed without an access token.
+Here are described all 16 endpoints of the API. All `GET` operations except `GET /users/:id` can be performed without an access token.
 
 ## GET /users/:id
 
@@ -15,7 +15,6 @@ Retrieve the information of an user giving its ID. The user in the access token 
 }
 ```
 
-## POST /sessions
 ## GET /tags
 
 Retrieve a list of tags
