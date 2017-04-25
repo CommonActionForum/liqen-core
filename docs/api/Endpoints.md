@@ -113,8 +113,59 @@ Retrieve a list of annotations
 ```
 
 ## GET /annotations/:id
+
+Get an annotation
+
+#### Example of successful response
+
+```json
+{
+    "id": 1,
+    "author": 1,
+    "article_id": 1,
+    "target": {
+        "type": "TextQuoteSelector",
+        "prefix": "ven mejores oportunidades en esas tierras, en un ",
+        "exact": "éxodo",
+        "suffix": " que ha visto emigraciones"
+    }
+}
+```
+
+## POST /annotations
+
+Create an annotation
+
+#### Example of request
+
+```json
+{
+    "article_id": 1,
+    "target": {
+        "type": "TextQuoteSelector",
+        "prefix": "ven mejores oportunidades en esas tierras, en un ",
+        "exact": "éxodo",
+        "suffix": " que ha visto emigraciones"
+    }
+}
+```
+
 ## PATCH /annotations/:id
+
+Edit an annotation
+
+#### Example of request
+
+```json
+{
+    "article_id": 1
+}
+```
+
 ## DELETE /annotations/:id
+
+Delete an annotation
+
 ## GET /questions
 ## GET /questions/:id
 ## GET /leeqs
