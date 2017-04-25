@@ -89,6 +89,8 @@ Retrieve an article
 
 Retrieve a list of annotations
 
+#### Example of successful response
+
 ```json
 [
     {
@@ -105,7 +107,7 @@ Retrieve a list of annotations
     {
         "id": 2,
         "author": "1",
-        "title": "País",
+        "title": "País"
     }
 ]
 ```
