@@ -17,10 +17,100 @@ Retrieve the information of an user giving its ID. The user in the access token 
 
 ## POST /sessions
 ## GET /tags
+
+Retrieve a list of tags
+
+#### Example of successful response
+
+```json
+[
+    {
+        "id": 1,
+        "title": "Person"
+    },
+    {
+        "id": 2,
+        "title": "Thing"
+    }
+]
+```
+
 ## GET /tags/:id
+
+Retrieve a tag.
+
+#### Example of successful response
+
+```json
+{
+    "id": 1,
+    "title": "Employer",
+    "source": {
+        "uri": "http://vocab.org/bio/#employer"
+    }
+}
+```
+
 ## GET /articles
+
+Retrieve a list of articles
+
+#### Example of successful response
+
+```json
+[
+    {
+        "id": 1,
+        "title": "My first article"
+    }
+]
+```
+
 ## GET /articles/:id
+
+Retrieve an article
+
+#### Example of successful response
+
+```json
+{
+    "id": 2,
+    "title": "Fuga de cerebros: ¿dolor de cabeza para Latinoamérica?",
+    "source": {
+        "uri": "http://www.bancomundial.org/es/news/feature/2013/11/06/fuga-cerebros-latinoamerica",
+        "target": {
+            "value": "/html/body/div[6]/div[1]/div[2]/div[1]/div[1]/div/div/div/div[2]/div[1]/div/div/div/div/div[3]/section/div",
+            "type": "XPathSelector"
+        }
+    }
+}
+```
+
 ## GET /annotations
+
+Retrieve a list of annotations
+
+```json
+[
+    {
+        "id": 1,
+        "author": 1,
+        "article_id": 1,
+        "target": {
+            "type": "TextQuoteSelector",
+            "suffix": " que ha visto emigraciones de hasta 90% en algunos países del Caribe.",
+            "prefix": "Mientras la anémica creación de empleo sigue siendo el Talón de Aquiles de la recuperación económica en EE.UU y Europa, muchos profesionales latinoamericanos ven mejores oportunidades en esas tierras, en un ",
+            "exact": "éxodo"
+        }
+    },
+    {
+        "id": 2,
+        "author": "1",
+        "title": "País",
+    }
+]
+```
+
 ## GET /annotations/:id
 ## PATCH /annotations/:id
 ## DELETE /annotations/:id
