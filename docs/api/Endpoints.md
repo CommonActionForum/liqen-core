@@ -167,6 +167,19 @@ Edit an annotation
 Delete an annotation
 
 ## GET /questions
+
+Retrieve a list of questions
+
+```json
+[
+    {
+        "id": 1,
+        "title": "¿Quién ganó la Liga en la temporada 2015-16?",
+        "answer": []
+    }
+]
+```
+
 ## GET /questions/:id
 ## GET /leeqs
 ## GET /leeqs/:id
