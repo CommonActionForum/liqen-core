@@ -20,10 +20,10 @@ Send your account data (e-mail and password) to the endpoint and get the access 
 
 Name     | Type   | Description
 :---     | :---   | :----------
-e-mail   | string | **Required**. E-mail of the user
+email    | string | **Required**. E-mail of the user
 password | string | **Required**. Password of the user
 
-### Example response
+### Example successful (**201**) response
 
 ```json
 {

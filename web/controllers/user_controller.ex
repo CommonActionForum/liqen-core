@@ -2,8 +2,9 @@ defmodule Core.UserController do
   use Core.Web, :controller
   alias Core.User
 
-  plug Guardian.Plug.EnsureAuthenticated, %{handler: Core.Auth}
-  plug :authorize
+  plug :find when action in [:show]
+  plug Core.Auth, %{key: :user,
+                    type: "users"} when action in [:show]
 
   def create(conn, params) do
     changeset = User.changeset(%User{}, params)
@@ -21,16 +22,25 @@ defmodule Core.UserController do
     end
   end
 
-  defp authorize(conn, _opts) do
+  def show(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
 
-    if User.can?(user, "super_user") do
-      conn
-    else
-      conn
-      |> put_status(:forbidden)
-      |> render(Core.ErrorView, "403.json", %{})
-      |> halt()
+    conn
+    |> put_status(:ok)
+    |> render(Core.UserView, "show.json", user: user)
+  end
+
+  defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
+    case Repo.get(User, id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> render(Core.ErrorView, "404.json", %{})
+        |> halt()
+
+      user ->
+        conn
+        |> assign(:user, user)
     end
   end
 end

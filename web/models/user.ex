@@ -118,6 +118,7 @@ defmodule Core.User do
           case role do
             "root" -> ["super_user"]
             "beta_user" -> [
+              "show_users",
               "create_facts",
               "read_facts",
               "update_facts",
@@ -162,6 +163,14 @@ defmodule Core.User do
   Checks if a `user` has permissions to do an `action` to a resource given its
   `type` and one specific object.
   """
+  def can?(user, action, "users", object) do
+    Enum.member?(user.permissions, "super_user") or
+    Enum.member?(user.permissions, "#{action}_all_users") or (
+      Enum.member?(user.permissions, "#{action}_users") and
+      object.id === user.id
+    )
+  end
+
   def can?(user, action, type, object) do
     # TODO - Refactor. Call can?/3 and can?/2
     Enum.member?(user.permissions, "super_user") or

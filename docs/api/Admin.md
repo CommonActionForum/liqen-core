@@ -10,17 +10,17 @@ Create a new user giving its e-mail and password.
 
 ```json
 {
-    "e-mail": "john@example.com",
+    "email": "john@example.com",
     "password": "secret"
 }
 ```
 
-#### Example of successful response
+#### Example of successful (**201**) response
 
 ```json
 {
     "id": 1,
-    "e-mail": "john@example.com"
+    "email": "john@example.com"
 }
 ```
 

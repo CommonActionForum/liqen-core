@@ -81,8 +81,8 @@ defmodule Core.Auth do
   defp validate_permissions(conn, resource, type, action) do
     user = Guardian.Plug.current_resource(conn)
     valid = case resource do
-              %{author: _} -> User.can?(user, action, type, resource)
-              _ -> User.can?(user, action, type)
+              nil -> User.can?(user, action, type)
+              _ -> User.can?(user, action, type, resource)
             end
 
     if valid do

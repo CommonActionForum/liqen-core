@@ -6,12 +6,12 @@ Here are described all 16 endpoints of the API. All `GET` operations except `GET
 
 Retrieve the information of an user giving its ID. The user in the access token must match with the requested user.
 
-#### Example of successful response
+#### Example of successful (**200**) response
 
 ```json
 {
     "id": 1,
-    "e-mail": "john@example.com"
+    "email": "john@example.com"
 }
 ```
 
