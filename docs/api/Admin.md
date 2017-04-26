@@ -32,5 +32,58 @@ Create a new user giving its e-mail and password.
 ## POST /articles
 ## DELETE /articles/:id
 ## POST /questions
+
+Create a new question
+
+#### Example request
+
+```json
+{
+    "title": "¿Cuál es la dinámica de las personas altamente cualificadas?",
+    "answer": [
+        {
+            "tag": 1,
+            "required": true
+        },
+        {
+            "tag": 2,
+            "required": true
+        },
+        {
+            "tag": 3,
+            "required": true
+        }
+    ]
+}
+```
+
 ## PUT /questions/:id
+
+Edit a question
+
+#### Example request 1. Changing the title
+
+```json
+{
+    "title": "Who is the writer of El Quijote"
+}
+```
+
+#### Example request 2. Changing expected answer
+
+```json
+{
+    "answer": [
+        {
+            "tag": 1,
+            "required": false
+        }
+    ]
+}
+```
+
+The change only will be performed if all tags exist.
+
+Note that changing the expected answer can cause several side-effects. Valid Liqs can become invalid ones.
+
 ## DELETE /questions/:id

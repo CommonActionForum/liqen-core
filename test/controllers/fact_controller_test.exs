@@ -12,7 +12,7 @@ defmodule Core.FactControllerTest do
     |> put_req_header("accept", "application/json")
     |> put_req_header("authorization", "Bearer #{jwt}")
 
-    {:ok, %{conn: conn}}
+    {:ok, %{conn: conn, user: user}}
   end
 
   test "List of Facts", %{conn: conn}  do
@@ -22,22 +22,31 @@ defmodule Core.FactControllerTest do
     assert json_response(conn, :ok)
   end
 
-  test "Create a fact", %{conn: conn} do
+  test "Create a fact", %{conn: conn, user: user} do
+    article = insert_article()
     question = insert_question()
+    a1 = insert_annotation(user, %{article_id: article.id})
+    a2 = insert_annotation(user, %{article_id: article.id})
 
-    conn1 = conn
+    connF1 = conn
     |> post(fact_path(conn, :create, %{}))
 
-    conn2 = conn
+    connF2 = conn
     |> post(fact_path(conn, :create, %{"question_id" => question.id}))
 
-    assert json_response(conn1, :unprocessable_entity)
-    assert json_response(conn2, :created)
+    conn1 = conn
+    |> post(fact_path(conn, :create, %{"question_id" => question.id,
+                                      "annotations" => [a1.id, a2.id]}))
+
+    assert json_response(connF1, :unprocessable_entity)
+    assert json_response(connF2, :unprocessable_entity)
+    assert json_response(conn1, :created)
   end
 
   test "Show a fact", %{conn: conn} do
     question = insert_question()
-    fact = insert_fact(%{question_id: question.id})
+    fact = insert_fact(%{question_id: question.id,
+                         annotations: []})
 
     conn = conn
     |> get(fact_path(conn, :show, fact.id))

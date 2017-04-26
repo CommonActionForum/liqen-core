@@ -23,14 +23,22 @@ defmodule Core.QuestionControllerTest do
   end
 
   test "Create a question", %{conn: conn} do
+    tag = insert_tag(%{})
     conn1 = conn
-    |> post(question_path(conn, :create), %{"title" => "x"})
+    |> post(question_path(conn, :create), %{"title" => "x",
+                                           "answer" => []})
 
     conn2 = conn
+    |> post(question_path(conn, :create), %{"title" => "x",
+                                           "answer" => [%{"tag" => tag.id,
+                                                          "required" => false}]})
+
+    connF = conn
     |> post(question_path(conn, :create), %{"title" => ""})
 
     assert json_response(conn1, :created)
-    assert json_response(conn2, :unprocessable_entity)
+    assert json_response(conn2, :created)
+    assert json_response(connF, :unprocessable_entity)
   end
 
   test "Show a question", %{conn: conn} do
@@ -49,10 +57,14 @@ defmodule Core.QuestionControllerTest do
     |> put(question_path(conn, :update, question.id), %{"title" => "b"})
 
     conn2 = conn
+    |> put(question_path(conn, :update, question.id), %{"answer" => []})
+
+    connF = conn
     |> put(question_path(conn, :update, question.id), %{"title" => ""})
 
     assert json_response(conn1, :ok)
-    assert json_response(conn2, :unprocessable_entity)
+    assert json_response(conn2, :ok)
+    assert json_response(connF, :unprocessable_entity)
   end
 
   test "Delete a question", %{conn: conn} do

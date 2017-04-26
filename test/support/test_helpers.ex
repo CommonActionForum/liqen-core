@@ -32,7 +32,8 @@ defmodule Core.TestHelpers do
   end
 
   def insert_question(attrs \\ %{}) do
-    changes = Map.merge(%{title: "Example question"}, attrs)
+    changes = Map.merge(%{title: "Example question",
+                          answer: []}, attrs)
 
     %Core.Question{}
     |> Core.Question.changeset(changes)
@@ -41,7 +42,8 @@ defmodule Core.TestHelpers do
 
   def insert_question_tag(attrs \\ %{}) do
     changes = Map.merge(%{question_id: 0,
-                          tag_id: 0}, attrs)
+                          tag_id: 0,
+                          required: true}, attrs)
 
     %Core.QuestionTag{}
     |> Core.QuestionTag.changeset(changes)
@@ -83,7 +85,8 @@ defmodule Core.TestHelpers do
   end
 
   def insert_fact(attrs \\ %{}) do
-    changes = Map.merge(%{question_id: 0}, attrs)
+    changes = Map.merge(%{question_id: 0,
+                          annotations: []}, attrs)
 
     %Core.Fact{}
     |> Core.Fact.changeset(changes)

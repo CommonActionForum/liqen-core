@@ -15,8 +15,13 @@ defmodule Core.QuestionView do
   end
 
   def render("question.json", %{question: question}) do
+    answer = Enum.map(question.answer, fn tag ->
+      %{tag: tag.id,
+        required: tag.required}
+    end)
+
     %{id: question.id,
       title: question.title,
-      tags: question.question_tags}
+      answer: answer}
   end
 end

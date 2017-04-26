@@ -13,7 +13,9 @@ defmodule Core.Fact do
 
   schema "facts" do
     belongs_to :question, Core.Question
-    many_to_many :annotations, Core.Annotation, join_through: Core.FactAnnotation
+    many_to_many :fact_annotations, Core.Annotation, join_through: Core.FactAnnotation
+
+    field :annotations, {:array, :integer}, virtual: true
 
     timestamps()
   end
@@ -27,8 +29,8 @@ defmodule Core.Fact do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:question_id])
-    |> validate_required([:question_id])
+    |> cast(params, [:question_id, :annotations])
+    |> validate_required([:question_id, :annotations])
     |> foreign_key_constraint(:question_id)
   end
 end

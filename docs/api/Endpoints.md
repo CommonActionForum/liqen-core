@@ -136,29 +136,42 @@ Get an annotation
 
 Create an annotation
 
-#### Example of request
+#### Example request
 
 ```json
 {
-    "article_id": 1,
+    "article_id": 3,
     "target": {
-        "type": "TextQuoteSelector",
-        "prefix": "ven mejores oportunidades en esas tierras, en un ",
-        "exact": "éxodo",
-        "suffix": " que ha visto emigraciones"
-    }
+        "type": "FragmentSelector",
+        "value": "id1"
+    },
+    "tags": [1]
+>>>>>>> minimum-answer
 }
 ```
 
 ## PATCH /annotations/:id
 
-Edit an annotation
-
-#### Example of request
+#### Example request 1. Editing the target
 
 ```json
 {
-    "article_id": 1
+    "target": {
+        "type": "CssSelector",
+        "value": "p",
+        "refinedBy": {
+            "type": "FragmentSelector",
+            "value": "id1"
+        }
+    }
+}
+```
+
+#### Example request 2. Editing the tag list
+
+```json
+{
+    "tags": [1, 2]
 }
 ```
 
@@ -181,8 +194,99 @@ Retrieve a list of questions
 ```
 
 ## GET /questions/:id
-## GET /leeqs
-## GET /leeqs/:id
-## POST /leeqs
-## PATCH /leeqs/:id
-## DELETE /leeqs/:id
+
+Retrieve the information of a given question.
+
+#### Example of successful (**200**) response
+
+```json
+{
+    "id": 1,
+    "author": 1,
+    "title": "¿Cuál es la dinámica de las personas altamente cualificadas?",
+    "answer": [
+        {
+            "tag": {
+                "id": 1,
+                "title": "Lugar de origen"
+            },
+            "required": true
+        },
+        {
+            "tag": {
+                "id": 2,
+                "title": "Motivo"
+            },
+            "required": true
+        },
+        {
+            "tag": {
+                "id": 3,
+                "title": "Lugar de destino"
+            },
+            "required": true
+        }
+    ]
+}
+```
+
+## GET /facts
+## GET /facts/:id
+
+Retrieve a Fact
+
+#### Example of successful (**200**) response
+
+```json
+{
+    "id": 7,
+    "question_id": 3,
+    "annotations": [
+        {
+            "id": 3,
+            "article": 1,
+            "target": {
+                "type" : "CssSelector",
+                "value" : "p"
+            },
+            "tags": [1, 2],
+        }
+    ],
+    "complete": true
+}
+```
+
+## POST /facts
+
+Creates a new Fact.
+
+```json
+{
+    "question_id": 1,
+    "annotations": [3, 2]
+}
+```
+
+## PATCH /facts/:id
+
+Modifies a Fact
+
+#### Example request 1. Editing the question
+
+```json
+{
+    "question_id": 1
+}
+```
+
+#### Example request 1. Editing the annotations
+
+```json
+{
+    "annotations": [3, 2]
+}
+```
+
+## DELETE /facts/:id
+
+Deletes a Fact

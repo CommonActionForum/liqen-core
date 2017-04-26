@@ -15,7 +15,11 @@ defmodule Core.FactView do
   end
 
   def render("fact.json", %{fact: fact}) do
-    annotations = Enum.map(fact.annotations, fn(annotation) -> annotation.id end)
+    annotations = Enum.map(fact.fact_annotations, fn(annotation) ->
+      %{id: annotation.id,
+        article_id: annotation.article_id,
+        target: annotation.target}
+    end)
 
     %{id: fact.id,
       question_id: fact.question.id,
