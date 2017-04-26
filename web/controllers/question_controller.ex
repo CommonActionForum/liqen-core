@@ -1,6 +1,7 @@
 defmodule Core.QuestionController do
   use Core.Web, :controller
   alias Core.Question
+  alias Core.QuestionTag
 
   plug :find when action in [:update, :delete, :show]
   plug Core.Auth, %{key: :question,
