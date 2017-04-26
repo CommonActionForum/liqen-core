@@ -17,8 +17,6 @@ defmodule Core.QuestionController do
 
     case insert_question_and_tags(changeset) do
       {:ok, question} ->
-        question = question
-        |> Repo.preload(:question_tags)
 
         conn
         |> put_status(:created)
@@ -90,7 +88,7 @@ defmodule Core.QuestionController do
           Repo.rollback(changeset)
 
         {:ok, question, tags} ->
-          Map.merge(question, %{tags: tags})
+          Map.merge(question, %{answer: tags})
       end
     end)
   end
@@ -103,7 +101,6 @@ defmodule Core.QuestionController do
     answer
     |> Enum.map(fn item ->
       QuestionTag.changeset(%QuestionTag{}, %{tag_id: item["tag"],
-                                              required: item["required"],
                                               question_id: question.id})
     end)
     |> Enum.reduce({:ok, question, []}, add_tag(question))
