@@ -79,7 +79,7 @@ defmodule Core.AnnotationController do
     annotation = Map.merge(annotation, %{tags: annotation.annotation_tags})
     changeset = Annotation.changeset(annotation, annotation_params)
 
-    case Repo.update(changeset) do
+    case update_annotation_and_tags(changeset) do
       {:ok, annotation} ->
         annotation = Repo.preload(annotation, :annotation_tags)
         conn
@@ -138,6 +138,25 @@ defmodule Core.AnnotationController do
     end)
   end
 
+  # Update annotation and tags
+  defp update_annotation_and_tags(changeset) do
+    tags = Ecto.Changeset.get_field(changeset, :tags)
+
+    Repo.transaction(fn ->
+      result = Repo.update(changeset)
+      |> remove_tags()
+      |> add_tags(tags)
+
+      case result do
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+
+        {:ok, annotation, tags} ->
+          Map.merge(annotation, %{tags: tags})
+      end
+    end)
+  end
+
   # Add tags to an annotation
   #
   # Returns a {:ok, tags} or {:error, changeset} tuple
@@ -151,7 +170,7 @@ defmodule Core.AnnotationController do
     |> Enum.reduce({:ok, annotation, []}, &add_tag/2)
   end
 
-  # Add a tag into a question
+  # Add a tag into a annotation
   defp add_tag(_, {:error, changeset}), do: {:error, changeset}
   defp add_tag(changeset = %{valid?: valid}, {:ok, _, _}) when not valid do
     {:error, changeset}
@@ -164,5 +183,14 @@ defmodule Core.AnnotationController do
       {:error, changeset} ->
         {:error, changeset}
     end
+  end
+
+  # Remove all tags from a annotation
+  defp remove_tags({:error, changeset}), do: {:error, changeset}
+  defp remove_tags({:ok, annotation}) do
+    query =  from(qt in AnnotationTag, where: qt.annotation_id == ^annotation.id)
+    Repo.delete_all(query)
+
+    {:ok, annotation}
   end
 end
