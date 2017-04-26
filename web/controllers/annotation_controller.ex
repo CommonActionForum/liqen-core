@@ -74,6 +74,9 @@ defmodule Core.AnnotationController do
   """
   def update(conn, annotation_params) do
     annotation = conn.assigns[:annotation]
+    |> Repo.preload(:annotation_tags)
+
+    annotation = Map.merge(annotation, %{tags: annotation.annotation_tags})
     changeset = Annotation.changeset(annotation, annotation_params)
 
     case Repo.update(changeset) do
