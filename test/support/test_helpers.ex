@@ -32,7 +32,8 @@ defmodule Core.TestHelpers do
   end
 
   def insert_question(attrs \\ %{}) do
-    changes = Map.merge(%{title: "Example question"}, attrs)
+    changes = Map.merge(%{title: "Example question",
+                          answer: []}, attrs)
 
     %Core.Question{}
     |> Core.Question.changeset(changes)
