@@ -7,6 +7,7 @@ defmodule Core.AnnotationController do
   """
   use Core.Web, :controller
   alias Core.Annotation
+  alias Core.AnnotationTag
 
   plug :find when action in [:update, :delete, :show]
   plug Core.Auth, %{key: :annotation,
@@ -34,7 +35,7 @@ defmodule Core.AnnotationController do
     |> build_assoc(:annotations)
     |> Annotation.changeset(annotation_params)
 
-    case Repo.insert(changeset) do
+    case insert_annotation_and_tags(changeset) do
       {:ok, annotation} ->
         annotation = Repo.preload(annotation, :annotation_tags)
 
@@ -113,6 +114,52 @@ defmodule Core.AnnotationController do
       annotation ->
         conn
         |> assign(:annotation, annotation)
+    end
+  end
+
+  # Insert annotation and tags
+  defp insert_annotation_and_tags(changeset) do
+    tags = Ecto.Changeset.get_field(changeset, :tags)
+
+    Repo.transaction(fn ->
+      result = Repo.insert(changeset)
+      |> add_tags(tags)
+
+      case result do
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+
+        {:ok, annotation, tags} ->
+          Map.merge(annotation, %{tags: tags})
+      end
+    end)
+  end
+
+  # Add tags to an annotation
+  #
+  # Returns a {:ok, tags} or {:error, changeset} tuple
+  defp add_tags({:error, changeset}, _), do: {:error, changeset}
+  defp add_tags({:ok, annotation}, tags) do
+    tags
+    |> Enum.map(fn tag ->
+      AnnotationTag.changeset(%AnnotationTag{}, %{tag_id: tag,
+                                                  annotation_id: annotation.id})
+    end)
+    |> Enum.reduce({:ok, annotation, []}, &add_tag/2)
+  end
+
+  # Add a tag into a question
+  defp add_tag(_, {:error, changeset}), do: {:error, changeset}
+  defp add_tag(changeset = %{valid?: valid}, {:ok, _, _}) when not valid do
+    {:error, changeset}
+  end
+  defp add_tag(changeset, {:ok, annotation, tags}) do
+    case Repo.insert(changeset) do
+      {:ok, tag} ->
+        {:ok, annotation, [tag|tags]}
+
+      {:error, changeset} ->
+        {:error, changeset}
     end
   end
 end
