@@ -106,7 +106,7 @@ defmodule Core.QuestionController do
                                               required: item["required"],
                                               question_id: question.id})
     end)
-    |> Enum.reduce({:ok, []}, add_tag(question))
+    |> Enum.reduce({:ok, question, []}, add_tag(question))
   end
 
   # Add a tag into a question
@@ -120,10 +120,10 @@ defmodule Core.QuestionController do
     (changeset = %{valid?: valid}, {:ok, _, _}) when not valid ->
       {:error, changeset}
 
-    (changeset, {:ok, tags}) ->
+    (changeset, {:ok, question, tags}) ->
       case Repo.insert(changeset) do
         {:ok, tag} ->
-          {:ok, [tag|tags]}
+          {:ok, question, [tag|tags]}
 
         {:error, changeset} ->
           {:error, changeset}
