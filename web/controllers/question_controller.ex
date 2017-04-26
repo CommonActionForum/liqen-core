@@ -33,11 +33,16 @@ defmodule Core.QuestionController do
     question = conn.assigns[:question]
     |> Repo.preload(:question_tags)
 
+    question = Map.merge(question, %{answer: question.question_tags})
+
     render(conn, "show.json", question: question)
   end
 
   def update(conn, question_params) do
     question = conn.assigns[:question]
+    |> Repo.preload(:question_tags)
+
+    question = Map.merge(question, %{answer: question.question_tags})
     changeset = Question.changeset(question, question_params)
 
     case Repo.update(changeset) do
