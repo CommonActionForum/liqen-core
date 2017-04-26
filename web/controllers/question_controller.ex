@@ -14,7 +14,7 @@ defmodule Core.QuestionController do
   def create(conn, question_params) do
     changeset = Question.changeset(%Question{}, question_params)
 
-    case Repo.insert(changeset) do
+    case insert_question_and_tags(changeset) do
       {:ok, question} ->
         question = question
         |> Repo.preload(:question_tags)
@@ -75,5 +75,57 @@ defmodule Core.QuestionController do
         conn
         |> assign(:question, question)
     end
+  end
+
+  defp insert_question_and_tags(changeset) do
+    answer = Ecto.Changeset.get_field(changeset, :answer)
+
+    Repo.transaction(fn ->
+      result = Repo.insert(changeset)
+      |> add_answer(answer)
+
+      case result do
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+
+        {:ok, question, tags} ->
+          Map.merge(question, %{tags: tags})
+      end
+    end)
+  end
+
+  # Add the answer to a question
+  #
+  # Returns a {:ok, tags} or {:error, changeset} tuple
+  defp add_answer({:error, changeset}, _), do: {:error, changeset}
+  defp add_answer({:ok, question}, answer) do
+    answer
+    |> Enum.map(fn item ->
+      QuestionTag.changeset(%QuestionTag{}, %{tag_id: item["tag"],
+                                              required: item["required"],
+                                              question_id: question.id})
+    end)
+    |> Enum.reduce({:ok, []}, add_tag(question))
+  end
+
+  # Add a tag into a question
+  #
+  # Returns an arity-2 function that reduces a list of changesets reducing it
+  # to a single {:ok, tags} or {:error, changeset} tuple
+  defp add_tag(question), do: fn
+    (_, {:error, changeset}) ->
+      {:error, changeset}
+
+    (changeset = %{valid?: valid}, {:ok, _, _}) when not valid ->
+      {:error, changeset}
+
+    (changeset, {:ok, tags}) ->
+      case Repo.insert(changeset) do
+        {:ok, tag} ->
+          {:ok, [tag|tags]}
+
+        {:error, changeset} ->
+          {:error, changeset}
+      end
   end
 end
