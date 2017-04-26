@@ -67,7 +67,8 @@ defmodule Core.TestHelpers do
                                     "refinedBy" => %{"type" => "TextQuoteSelector",
                                                      "prefix" => "",
                                                      "exact" => "",
-                                                     "suffix" => ""}}}, attrs)
+                                                     "suffix" => ""}},
+                          tags: []}, attrs)
     user
     |> Ecto.build_assoc(:annotations)
     |> Core.Annotation.changeset(changes)
