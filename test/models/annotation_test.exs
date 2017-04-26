@@ -8,7 +8,8 @@ defmodule Core.AnnotationTest do
                   "exact" => ""}
 
   @valid_attrs %{target: @valid_target,
-                 article_id: 1}
+                 article_id: 1,
+                 tags: [1, 2, 3]}
 
   test "converts foreign_key_constraint to error" do
     article = insert_article()
