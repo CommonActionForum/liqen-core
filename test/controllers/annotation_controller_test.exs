@@ -24,19 +24,28 @@ defmodule Core.AnnotationControllerTest do
 
   test "Create an annotation", %{conn: conn} do
     article = insert_article()
+    tag = insert_tag(%{})
+    target = %{"type" => "XPathSelector",
+               "value" => "x"}
 
     conn1 = conn
-    |> post(annotation_path(conn, :create, %{}))
-
-    params = %{"article_id" => article.id,
-               "target" => %{"type" => "XPathSelector",
-                             "value" => "x"}}
+    |> post(annotation_path(conn, :create), %{"title" => "x",
+                                             "article_id" => article.id,
+                                             "target" => target,
+                                             "tags" => []})
 
     conn2 = conn
-    |> post(annotation_path(conn, :create, params))
+    |> post(annotation_path(conn, :create), %{"title" => "x",
+                                             "article_id" => article.id,
+                                             "target" => target,
+                                             "tags" => [tag.id]})
 
-    assert json_response(conn1, :unprocessable_entity)
+    connF = conn
+    |> post(annotation_path(conn, :create), %{"title" => ""})
+
+    assert json_response(conn1, :created)
     assert json_response(conn2, :created)
+    assert json_response(connF, :unprocessable_entity)
   end
 
   test "Show an annotation", %{conn: conn, user: user} do

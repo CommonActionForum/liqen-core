@@ -17,9 +17,6 @@ defmodule Core.QuestionController do
 
     case insert_question_and_tags(changeset) do
       {:ok, question} ->
-        answer = Repo.all(from(qt in QuestionTag, where: qt.question_id == ^question.id))
-        question = Map.merge(question, %{answer: answer})
-
         conn
         |> put_status(:created)
         |> put_resp_header("location", question_path(conn, :show, question))
@@ -34,19 +31,19 @@ defmodule Core.QuestionController do
 
   def show(conn, _) do
     question = conn.assigns[:question]
-    answer = Repo.all(from(qt in QuestionTag, where: qt.question_id == ^question.id))
-    question = Map.merge(question, %{answer: answer})
+    |> Repo.preload(:question_tags)
 
-    render(conn, "show.json", %{question: question})
+    question = Map.merge(question, %{answer: question.question_tags})
+
+    render(conn, "show.json", question: question)
   end
 
   def update(conn, question_params) do
     question = conn.assigns[:question]
     |> Repo.preload(:question_tags)
 
-    changeset = Question.changeset(
-      Map.merge(question, %{answer: question.question_tags}),
-      question_params)
+    question = Map.merge(question, %{answer: question.question_tags})
+    changeset = Question.changeset(question, question_params)
 
     case update_question_and_tags(changeset) do
       {:ok, question} ->
@@ -85,59 +82,80 @@ defmodule Core.QuestionController do
   end
 
   defp insert_question_and_tags(changeset) do
+    answer = Ecto.Changeset.get_field(changeset, :answer)
+
     Repo.transaction(fn ->
-      case (Repo.insert(changeset) |> insert_tags(changeset)) do
+      result = Repo.insert(changeset)
+      |> add_answer(answer)
+
+      case result do
         {:error, changeset} ->
           Repo.rollback(changeset)
+
         {:ok, question, tags} ->
-          Map.merge(question, %{tags: tags})
+          Map.merge(question, %{answer: tags})
       end
     end)
   end
 
+  # Update question and tags
   defp update_question_and_tags(changeset) do
+    answer = Ecto.Changeset.get_field(changeset, :answer)
+
     Repo.transaction(fn ->
-      case (Repo.update(changeset) |> remove_tags(changeset) |> insert_tags(changeset)) do
+      result = Repo.update(changeset)
+      |> remove_tags()
+      |> add_answer(answer)
+
+      case result do
         {:error, changeset} ->
           Repo.rollback(changeset)
-        {:ok, question, tags} ->
-          Map.merge(question, %{tags: tags})
+
+        {:ok, annotation, tags} ->
+          Map.merge(annotation, %{answer: tags})
       end
     end)
   end
 
-  defp insert_tags({:error, changeset}, _), do: {:error, changeset}
-  defp insert_tags({:ok, question}, changeset) do
-    tag_id_to_changeset = fn answer ->
-      QuestionTag.changeset(%QuestionTag{}, %{"tag_id" => answer["tag"],
-                                              "required" => answer["required"],
-                                              "question_id" => question.id})
-    end
-
-    insert_changeset = fn
-      (_changeset, {:error, x}) ->
-        {:error, x}
-
-      (changeset = %{valid?: valid}, {:ok, _question, _tags}) when not valid ->
-        {:error, changeset}
-
-      (changeset, {:ok, question, tags}) ->
-        case Repo.insert(changeset) do
-          {:ok, tag} ->
-            {:ok, question, [tag|tags]}
-
-          {:error, changeset} ->
-            {:error, changeset}
-        end
-    end
-
-    Enum.map(Ecto.Changeset.get_field(changeset, :answer), tag_id_to_changeset)
-    |> Enum.reduce({:ok, question, []}, insert_changeset)
+  # Add the answer to a question
+  #
+  # Returns a {:ok, tags} or {:error, changeset} tuple
+  defp add_answer({:error, changeset}, _), do: {:error, changeset}
+  defp add_answer({:ok, question}, answer) do
+    answer
+    |> Enum.map(fn item ->
+      QuestionTag.changeset(%QuestionTag{}, %{tag_id: item["tag"],
+                                              required: item["required"],
+                                              question_id: question.id})
+    end)
+    |> Enum.reduce({:ok, question, []}, add_tag(question))
   end
 
-  defp remove_tags({:error, changeset}, _), do: {:error, changeset}
-  defp remove_tags({:ok, question}, _) do
-    query = from(qt in QuestionTag, where: qt.question_id == ^question.id)
+  # Add a tag into a question
+  #
+  # Returns an arity-2 function that reduces a list of changesets reducing it
+  # to a single {:ok, tags} or {:error, changeset} tuple
+  defp add_tag(question), do: fn
+    (_, {:error, changeset}) ->
+      {:error, changeset}
+
+    (changeset = %{valid?: valid}, {:ok, _, _}) when not valid ->
+      {:error, changeset}
+
+    (changeset, {:ok, question, tags}) ->
+      case Repo.insert(changeset) do
+        {:ok, tag} ->
+          {:ok, question, [tag|tags]}
+
+        {:error, changeset} ->
+          {:error, changeset}
+      end
+  end
+
+  # Remove all tags from a annotation
+  defp remove_tags({:error, changeset}), do: {:error, changeset}
+  defp remove_tags({:ok, question}) do
+    query =  from(qt in QuestionTag, where: qt.question_id == ^question.id)
     Repo.delete_all(query)
 
     {:ok, question}

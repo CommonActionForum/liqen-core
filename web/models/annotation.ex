@@ -24,6 +24,8 @@ defmodule Core.Annotation do
 
     many_to_many :annotation_tags, Core.Tag, join_through: Core.AnnotationTag
 
+    field :tags, {:array, :integer}, virtual: true
+
     timestamps()
   end
 
@@ -39,8 +41,8 @@ defmodule Core.Annotation do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:article_id, :target])
-    |> validate_required([:article_id, :target])
+    |> cast(params, [:article_id, :target, :tags])
+    |> validate_required([:article_id, :target, :tags])
     |> foreign_key_constraint(:article_id)
   end
 
