@@ -45,7 +45,7 @@ defmodule Core.QuestionController do
     question = Map.merge(question, %{answer: question.question_tags})
     changeset = Question.changeset(question, question_params)
 
-    case Repo.update(changeset) do
+    case update_question_and_tags(changeset) do
       {:ok, question} ->
         question = question
         |> Repo.preload(:question_tags)
@@ -98,6 +98,25 @@ defmodule Core.QuestionController do
     end)
   end
 
+  # Update question and tags
+  defp update_question_and_tags(changeset) do
+    answer = Ecto.Changeset.get_field(changeset, :answer)
+
+    Repo.transaction(fn ->
+      result = Repo.update(changeset)
+      |> remove_tags()
+      |> add_answer(answer)
+
+      case result do
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+
+        {:ok, annotation, tags} ->
+          Map.merge(annotation, %{answer: tags})
+      end
+    end)
+  end
+
   # Add the answer to a question
   #
   # Returns a {:ok, tags} or {:error, changeset} tuple
@@ -130,5 +149,14 @@ defmodule Core.QuestionController do
         {:error, changeset} ->
           {:error, changeset}
       end
+  end
+
+  # Remove all tags from a annotation
+  defp remove_tags({:error, changeset}), do: {:error, changeset}
+  defp remove_tags({:ok, question}) do
+    query =  from(qt in QuestionTag, where: qt.question_id == ^question.id)
+    Repo.delete_all(query)
+
+    {:ok, question}
   end
 end
