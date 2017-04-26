@@ -23,14 +23,22 @@ defmodule Core.QuestionControllerTest do
   end
 
   test "Create a question", %{conn: conn} do
+
+    tag = insert_tag(%{})
     conn1 = conn
-    |> post(question_path(conn, :create), %{"title" => "x"})
+    |> post(question_path(conn, :create), %{"title" => "x",
+                                           "answer" => []})
 
     conn2 = conn
+    |> post(question_path(conn, :create), %{"title" => "x",
+                                           "answer" => [%{"tag" => tag.id}]})
+
+    connF = conn
     |> post(question_path(conn, :create), %{"title" => ""})
 
     assert json_response(conn1, :created)
-    assert json_response(conn2, :unprocessable_entity)
+    assert json_response(conn2, :created)
+    assert json_response(connF, :unprocessable_entity)
   end
 
   test "Show a question", %{conn: conn} do
