@@ -16,7 +16,6 @@ defmodule Core.AnnotationView do
   end
 
   def render("annotation.json", %{annotation: annotation}) do
-    target = annotation.target
     tags = Enum.map(annotation.annotation_tags, fn(tag) -> %{id: tag.id,
                                                              title: tag.title} end)
 

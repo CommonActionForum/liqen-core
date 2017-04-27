@@ -135,7 +135,7 @@ defmodule Core.QuestionController do
   #
   # Returns an arity-2 function that reduces a list of changesets reducing it
   # to a single {:ok, tags} or {:error, changeset} tuple
-  defp add_tag(question), do: fn
+  defp add_tag(_question), do: fn
     (_, {:error, changeset}) ->
       {:error, changeset}
 

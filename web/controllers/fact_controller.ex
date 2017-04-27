@@ -92,7 +92,7 @@ defmodule Core.FactController do
       case (Repo.insert(changeset) |> insert_annotations(changeset)) do
         {:error, changeset} ->
           Repo.rollback(changeset)
-        {:ok, fact, annotations} ->
+        {:ok, fact, _annotations} ->
           fact
       end
     end)
@@ -103,7 +103,7 @@ defmodule Core.FactController do
       case (Repo.update(changeset) |> remove_annotations(changeset) |> insert_annotations(changeset)) do
         {:error, changeset} ->
           Repo.rollback(changeset)
-        {:ok, fact, annotations} ->
+        {:ok, fact, _annotations} ->
           fact
       end
     end)

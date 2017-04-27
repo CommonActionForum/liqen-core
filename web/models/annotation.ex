@@ -68,5 +68,7 @@ defmodule Core.Annotation do
               {:ok, author} ->
                 from a in query, where: a.author == ^author
             end
+
+    query
   end
 end
