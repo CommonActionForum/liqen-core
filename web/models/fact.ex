@@ -33,4 +33,18 @@ defmodule Core.Fact do
     |> validate_required([:question_id, :annotations])
     |> foreign_key_constraint(:question_id)
   end
+
+  @doc """
+  Check if a fact answers a question completely
+  """
+  def answers?(fact, question) do
+    available = fact.annotations
+    |> Enum.map(fn annotation -> annotation.tags end)
+    |> List.flatten()
+
+    question.answer
+    |> Enum.filter(fn tag -> tag.required end)
+    |> Enum.map(fn item -> item.tag.id end)
+    |> Enum.all?(&Enum.member?(available, &1))
+  end
 end
