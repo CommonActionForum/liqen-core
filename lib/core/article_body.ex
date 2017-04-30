@@ -33,9 +33,12 @@ defmodule Core.ArticleBody do
                                 "children" => children}}
     end
   end
-  def cast_element(%{"name" => name, "children" => children}), do: cast_element(%{"name" => name,
-                                                                                  "id" => "",
-                                                                                  "children" => children})
+  def cast_element(%{"name" => name,
+                     "children" => children}) do
+    cast_element(%{"name" => name,
+                   "id" => "",
+                   "children" => children})
+  end
   def cast_element(_), do: :error
 
   @doc """

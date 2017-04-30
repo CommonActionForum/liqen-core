@@ -3,9 +3,11 @@ defmodule Core.QuestionController do
   alias Core.Question
   alias Core.QuestionTag
 
-  plug :find when action in [:update, :delete, :show]
-  plug Core.Auth, %{key: :question,
-                    type: "questions"} when action in [:create, :update, :delete]
+  plug :find
+  when action in [:update, :delete, :show]
+
+  plug Core.Auth, %{key: :question, type: "questions"}
+  when action in [:create, :update, :delete]
 
   def index(conn, _params) do
     questions = Repo.all(Question)
@@ -47,10 +49,15 @@ defmodule Core.QuestionController do
 
     case update_question_and_tags(changeset) do
       {:ok, question} ->
-        answer = Repo.all(from(qt in QuestionTag, where: qt.question_id == ^question.id))
+        answer = Repo.all(from(
+            qt in QuestionTag,
+            where: qt.question_id == ^question.id
+          ))
+
         question = Map.merge(question, %{answer: answer})
 
         render(conn, "show.json", %{question: question})
+
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -85,8 +92,10 @@ defmodule Core.QuestionController do
     answer = Ecto.Changeset.get_field(changeset, :answer)
 
     Repo.transaction(fn ->
-      result = Repo.insert(changeset)
-      |> add_answer(answer)
+      result =
+        changeset
+        |> Repo.insert()
+        |> add_answer(answer)
 
       case result do
         {:error, changeset} ->
@@ -103,9 +112,11 @@ defmodule Core.QuestionController do
     answer = Ecto.Changeset.get_field(changeset, :answer)
 
     Repo.transaction(fn ->
-      result = Repo.update(changeset)
-      |> remove_tags()
-      |> add_answer(answer)
+      result =
+        changeset
+        |> Repo.update()
+        |> remove_tags()
+        |> add_answer(answer)
 
       case result do
         {:error, changeset} ->
@@ -124,9 +135,12 @@ defmodule Core.QuestionController do
   defp add_answer({:ok, question}, answer) do
     answer
     |> Enum.map(fn item ->
-      QuestionTag.changeset(%QuestionTag{}, %{tag_id: item["tag"],
-                                              required: item["required"],
-                                              question_id: question.id})
+      QuestionTag.changeset(
+        %QuestionTag{},
+        %{tag_id: item["tag"],
+          required: item["required"],
+          question_id: question.id}
+      )
     end)
     |> Enum.reduce({:ok, question, []}, add_tag(question))
   end
@@ -145,7 +159,7 @@ defmodule Core.QuestionController do
     (changeset, {:ok, question, tags}) ->
       case Repo.insert(changeset) do
         {:ok, tag} ->
-          {:ok, question, [tag|tags]}
+          {:ok, question, [tag | tags]}
 
         {:error, changeset} ->
           {:error, changeset}

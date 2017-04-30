@@ -13,7 +13,8 @@ defmodule Core.Fact do
 
   schema "facts" do
     belongs_to :question, Core.Question
-    many_to_many :fact_annotations, Core.Annotation, join_through: Core.FactAnnotation
+    many_to_many :fact_annotations, Core.Annotation,
+      join_through: Core.FactAnnotation
 
     field :annotations, {:array, :integer}, virtual: true
 

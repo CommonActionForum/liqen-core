@@ -10,8 +10,10 @@ defmodule Core.AnnotationController do
   alias Core.AnnotationTag
 
   plug :find when action in [:update, :delete, :show]
-  plug Core.Auth, %{key: :annotation,
-                    type: "annotations"} when action in [:create, :update, :delete]
+  plug Core.Auth,
+    %{key: :annotation,
+      type: "annotations"}
+  when action in [:create, :update, :delete]
 
   @doc """
   Renders a list of all the annotations
@@ -31,9 +33,10 @@ defmodule Core.AnnotationController do
   """
   def create(conn, annotation_params) do
     user = Guardian.Plug.current_resource(conn)
-    changeset = user
-    |> build_assoc(:annotations)
-    |> Annotation.changeset(annotation_params)
+    changeset =
+      user
+      |> build_assoc(:annotations)
+      |> Annotation.changeset(annotation_params)
 
     case insert_annotation_and_tags(changeset) do
       {:ok, annotation} ->
@@ -57,8 +60,9 @@ defmodule Core.AnnotationController do
   `conn.assigns.annotation` must be the Annotation object to show.
   """
   def show(conn, _) do
-    annotation = conn.assigns[:annotation]
-    |> Repo.preload(:annotation_tags)
+    annotation =
+      conn.assigns.annotation
+      |> Repo.preload(:annotation_tags)
 
     conn
     |> render("show.json", annotation: annotation)
@@ -73,8 +77,9 @@ defmodule Core.AnnotationController do
   `conn.assigns.annotation` must be the Annotation object to edit.
   """
   def update(conn, annotation_params) do
-    annotation = conn.assigns[:annotation]
-    |> Repo.preload(:annotation_tags)
+    annotation =
+      conn.assigns.annotation
+      |> Repo.preload(:annotation_tags)
 
     annotation = Map.merge(annotation, %{tags: annotation.annotation_tags})
     changeset = Annotation.changeset(annotation, annotation_params)
@@ -98,7 +103,7 @@ defmodule Core.AnnotationController do
   `conn.assigns.annotation` must be the Annotation object to delete.
   """
   def delete(conn, _) do
-    annotation = conn.assigns[:annotation]
+    annotation = conn.assigns.annotation
     Repo.delete!(annotation)
     send_resp(conn, :no_content, "")
   end
@@ -125,8 +130,10 @@ defmodule Core.AnnotationController do
     tags = Ecto.Changeset.get_field(changeset, :tags)
 
     Repo.transaction(fn ->
-      result = Repo.insert(changeset)
-      |> add_tags(tags)
+      result =
+        changeset
+        |> Repo.insert()
+        |> add_tags(tags)
 
       case result do
         {:error, changeset} ->
@@ -143,9 +150,11 @@ defmodule Core.AnnotationController do
     tags = Ecto.Changeset.get_field(changeset, :tags)
 
     Repo.transaction(fn ->
-      result = Repo.update(changeset)
-      |> remove_tags()
-      |> add_tags(tags)
+      result =
+        changeset
+        |> Repo.update()
+        |> remove_tags()
+        |> add_tags(tags)
 
       case result do
         {:error, changeset} ->
@@ -164,8 +173,10 @@ defmodule Core.AnnotationController do
   defp add_tags({:ok, annotation}, tags) do
     tags
     |> Enum.map(fn tag ->
-      AnnotationTag.changeset(%AnnotationTag{}, %{tag_id: tag,
-                                                  annotation_id: annotation.id})
+      AnnotationTag.changeset(
+        %AnnotationTag{}, %{
+          tag_id: tag,
+          annotation_id: annotation.id})
     end)
     |> Enum.reduce({:ok, annotation, []}, &add_tag/2)
   end
@@ -178,7 +189,7 @@ defmodule Core.AnnotationController do
   defp add_tag(changeset, {:ok, annotation, tags}) do
     case Repo.insert(changeset) do
       {:ok, tag} ->
-        {:ok, annotation, [tag|tags]}
+        {:ok, annotation, [tag | tags]}
 
       {:error, changeset} ->
         {:error, changeset}
@@ -188,7 +199,9 @@ defmodule Core.AnnotationController do
   # Remove all tags from a annotation
   defp remove_tags({:error, changeset}), do: {:error, changeset}
   defp remove_tags({:ok, annotation}) do
-    query =  from(qt in AnnotationTag, where: qt.annotation_id == ^annotation.id)
+    query =  from(qt in AnnotationTag,
+      where: qt.annotation_id == ^annotation.id)
+
     Repo.delete_all(query)
 
     {:ok, annotation}

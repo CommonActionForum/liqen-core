@@ -103,7 +103,8 @@ defmodule Core.User do
   defp put_pass_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
-        put_change(changeset, :crypted_password, Comeonin.Bcrypt.hashpwsalt(pass))
+        changeset
+        |> put_change(:crypted_password, Comeonin.Bcrypt.hashpwsalt(pass))
 
       _ ->
         changeset

@@ -5,7 +5,9 @@ config :dogma,
   exclude: [
     ~r(\Atest/),
     ~r(\Aconfig/),
-    ~r(\Atest/)
+    ~r(\Atest/),
+    ~r(\Aweb/views/error_helpers.ex),
+    ~r(\Aweb/web.ex)
   ],
 
   override: [

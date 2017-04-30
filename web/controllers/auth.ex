@@ -67,6 +67,7 @@ defmodule Core.Auth do
     case Guardian.decode_and_verify(token) do
       {:ok, _} ->
         conn
+
       {:error, _} ->
         conn
         |> put_status(:unauthorized)
@@ -80,13 +81,18 @@ defmodule Core.Auth do
   defp validate_permissions(conn = %Plug.Conn{halted: true}, _, _, _), do: conn
   defp validate_permissions(conn, resource, type, action) do
     user = Guardian.Plug.current_resource(conn)
-    valid = case resource do
-              nil -> User.can?(user, action, type)
-              _ -> User.can?(user, action, type, resource)
-            end
+    valid =
+      case resource do
+        nil ->
+          User.can?(user, action, type)
+
+        _ ->
+          User.can?(user, action, type, resource)
+      end
 
     if valid do
       conn
+
     else
       conn
       |> put_status(:forbidden)
@@ -123,6 +129,7 @@ defmodule Core.Auth do
     cond do
       user && checkpw(pass, user.crypted_password) ->
         {:ok, create_session(conn, user)}
+
       true ->
         {:error, :unauthorized, conn}
     end
@@ -147,6 +154,7 @@ defmodule Core.Auth do
 
         conn
         |> assign(:current_session, session)
+
       {:error, _} ->
         conn
         |> assign(:current_session, nil)

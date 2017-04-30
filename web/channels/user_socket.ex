@@ -1,10 +1,10 @@
 defmodule Core.UserSocket do
   use Phoenix.Socket
 
-  ## Channels
+  # Channels
   # channel "room:*", Core.RoomChannel
 
-  ## Transports
+  # Transports
   transport :websocket, Phoenix.Transports.WebSocket
   # transport :longpoll, Phoenix.Transports.LongPoll
 
@@ -23,7 +23,8 @@ defmodule Core.UserSocket do
     {:ok, socket}
   end
 
-  # Socket id's are topics that allow you to identify all sockets for a given user:
+  # Socket id's are topics that allow you to identify all sockets for a given
+  # user:
   #
   #     def id(socket), do: "users_socket:#{socket.assigns.user_id}"
   #

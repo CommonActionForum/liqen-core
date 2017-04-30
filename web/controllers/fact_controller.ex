@@ -8,8 +8,10 @@ defmodule Core.FactController do
                     type: "facts"} when action in [:create, :update, :delete]
 
   def index(conn, _params) do
-    facts = Repo.all(Fact)
-    |> Repo.preload(:question)
+    facts =
+      Fact
+      |> Repo.all()
+      |> Repo.preload(:question)
 
     render(conn, "index.json", facts: facts)
   end
@@ -19,9 +21,10 @@ defmodule Core.FactController do
 
     case insert_fact_and_annotations(changeset) do
       {:ok, fact} ->
-        fact = fact
-        |> Repo.preload(:question)
-        |> Repo.preload(:fact_annotations)
+        fact =
+          fact
+          |> Repo.preload(:question)
+          |> Repo.preload(:fact_annotations)
 
         conn
         |> put_status(:created)
@@ -36,7 +39,7 @@ defmodule Core.FactController do
 
   def show(conn, _) do
     fact =
-      conn.assigns[:fact]
+      conn.assigns.fact
       |> Repo.preload(:question)
       |> Repo.preload(:fact_annotations)
 
@@ -44,8 +47,9 @@ defmodule Core.FactController do
   end
 
   def update(conn, fact_params) do
-    fact = conn.assigns[:fact]
-    |> Repo.preload(:fact_annotations)
+    fact =
+      conn.assigns.fact
+      |> Repo.preload(:fact_annotations)
 
     fact = Map.merge(fact, %{annotations: fact.fact_annotations })
 
@@ -68,7 +72,7 @@ defmodule Core.FactController do
   end
 
   def delete(conn, _) do
-    fact = conn.assigns[:fact]
+    fact = conn.assigns.fact
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
@@ -93,7 +97,12 @@ defmodule Core.FactController do
 
   defp insert_fact_and_annotations(changeset) do
     Repo.transaction(fn ->
-      case (Repo.insert(changeset) |> insert_annotations(changeset)) do
+      result =
+        changeset
+        |> Repo.insert()
+        |> insert_annotations(changeset)
+
+      case result do
         {:error, changeset} ->
           Repo.rollback(changeset)
 
@@ -105,7 +114,13 @@ defmodule Core.FactController do
 
   defp update_fact_and_annotations(changeset) do
     Repo.transaction(fn ->
-      case (Repo.update(changeset) |> remove_annotations(changeset) |> insert_annotations(changeset)) do
+      result =
+        changeset
+        |> Repo.update()
+        |> remove_annotations(changeset)
+        |> insert_annotations(changeset)
+
+      case result do
         {:error, changeset} ->
           Repo.rollback(changeset)
 
@@ -131,7 +146,7 @@ defmodule Core.FactController do
     {:ok, fact}
   end
 
-  defp create_changeset(fact_id), do: fn (annotation_id) ->
+  defp create_changeset(fact_id), do: fn annotation_id ->
     params = %{"annotation_id" => annotation_id,
                "fact_id" => fact_id}
 
@@ -141,16 +156,15 @@ defmodule Core.FactController do
   defp insert_annotation(_, {:error, changeset}) do
     {:error, changeset}
   end
-  defp insert_annotation(changeset = %{valid?: valid}, {:ok, _, _}) when not valid do
-    {:error, changeset}
-  end
-  defp insert_annotation(changeset, {:ok, fact, annotations}) do
+  defp insert_annotation(changeset = %{valid?: valid}, {:ok, fact, annotations})
+  when valid do
     case Repo.insert(changeset) do
       {:ok, annotation} ->
-        {:ok, fact, [annotation|annotations]}
+        {:ok, fact, [annotation | annotations]}
 
       {:error, changeset} ->
         {:error, changeset}
     end
   end
+  defp insert_annotation(changeset, _), do: {:error, changeset}
 end

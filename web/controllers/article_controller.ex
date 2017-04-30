@@ -1,11 +1,10 @@
 defmodule Core.ArticleController do
   use Core.Web, :controller
-
   alias Core.Article
 
   plug :find when action in [:update, :delete, :show]
-  plug Core.Auth, %{key: :article,
-                    type: "articles"} when action in [:create, :update, :delete]
+  plug Core.Auth, %{key: :article, type: "articles"}
+  when action in [:create, :update, :delete]
 
   def index(conn, _params) do
     articles = Repo.all(Article)
@@ -21,6 +20,7 @@ defmodule Core.ArticleController do
         |> put_status(:created)
         |> put_resp_header("location", article_path(conn, :show, article))
         |> render("show.json", article: article)
+
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -29,17 +29,18 @@ defmodule Core.ArticleController do
   end
 
   def show(conn, _) do
-    article = conn.assigns[:article]
+    article = conn.assigns.article
     render(conn, "show.json", article: article)
   end
 
   def update(conn, article_params) do
-    article = conn.assigns[:article]
+    article = conn.assigns.article
     changeset = Article.changeset(article, article_params)
 
     case Repo.update(changeset) do
       {:ok, article} ->
         render(conn, "show.json", article: article)
+
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -48,7 +49,7 @@ defmodule Core.ArticleController do
   end
 
   def delete(conn, _) do
-    article = conn.assigns[:article]
+    article = conn.assigns.article
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
@@ -64,6 +65,7 @@ defmodule Core.ArticleController do
         |> put_status(:not_found)
         |> render(Core.ErrorView, "404.json", %{})
         |> halt()
+
       article ->
         conn
         |> assign(:article, article)
