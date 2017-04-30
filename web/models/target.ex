@@ -14,15 +14,17 @@ defmodule Core.Target do
                       prefix: _,
                       exact: _,
                       suffix: _}), do: {:ok, target}
-  def cast(target = %{type: type,
-                      value: value,
-                      refinedBy: refinedBy}) when type in @valid_types do
+  def cast(%{type: type,
+             value: value,
+             refinedBy: refinedBy}) when type in @valid_types do
     case cast(refinedBy) do
       :error ->
         :error
 
-      {:ok, _} ->
-        {:ok, target}
+      {:ok, ref} ->
+        {:ok, %{type: type,
+                value: value,
+                refinedBy: ref}}
     end
   end
   def cast(target = %{type: type,
