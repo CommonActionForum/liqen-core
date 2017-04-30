@@ -59,7 +59,7 @@ defmodule Core.Target do
   def dump(%{type: "TextQuoteSelector",
              prefix: prefix,
              exact: exact,
-             suffix: suffix}), do: {:ok, %{"type" => type,
+             suffix: suffix}), do: {:ok, %{"type" => "TextQuoteSelector",
                                            "prefix" => prefix,
                                            "exact" => exact,
                                            "suffix" => suffix}}
