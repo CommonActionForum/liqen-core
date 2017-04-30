@@ -20,7 +20,7 @@ env:
   - MIX_ENV=test
 
 script:
-  - mix do deps.get, compile, coveralls.travis
+  - mix do deps.get, compile, dogma, coveralls.travis
 
 notifications:
   slack:

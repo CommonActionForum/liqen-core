@@ -21,8 +21,9 @@ defmodule Core.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {Core, []},
-     applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :comeonin]]
+     applications: [
+       :phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
+       :phoenix_ecto, :postgrex, :comeonin]]
   end
 
   # Specifies which paths to compile per environment.
@@ -44,6 +45,7 @@ defmodule Core.Mixfile do
      {:guardian, "~> 0.14"},
      {:ex_doc, "~> 0.14", only: :dev, runtime: false},
      {:excoveralls, "~> 0.6", only: :test},
+     {:dogma, "~> 0.1", only: [:dev, :test]},
      {:cowboy, "~> 1.0"}]
   end
 
