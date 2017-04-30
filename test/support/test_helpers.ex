@@ -52,8 +52,8 @@ defmodule Core.TestHelpers do
 
   def insert_article(attrs \\ %{}) do
     changes = Map.merge(%{title: "Example article",
-                          source_target: %{"type" => "XPathSelector",
-                                           "value" => "html"},
+                          source_target: %{type: "XPathSelector",
+                                           value: "html"},
                           source_uri: "http://www.example.com"}, attrs)
 
     %Core.Article{}
@@ -63,12 +63,12 @@ defmodule Core.TestHelpers do
 
   def insert_annotation(user, attrs \\ %{}) do
     changes = Map.merge(%{article_id: 0,
-                          target: %{"type" => "FragmentSelector",
-                                    "value" => "",
-                                    "refinedBy" => %{"type" => "TextQuoteSelector",
-                                                     "prefix" => "",
-                                                     "exact" => "",
-                                                     "suffix" => ""}},
+                          target: %{type: "FragmentSelector",
+                                    value: "",
+                                    refinedBy: %{type: "TextQuoteSelector",
+                                                 prefix: "",
+                                                 exact: "",
+                                                 suffix: ""}},
                           tags: []}, attrs)
     user
     |> Ecto.build_assoc(:annotations)
