@@ -35,9 +35,10 @@ defmodule Core.FactController do
   end
 
   def show(conn, _) do
-    fact = conn.assigns[:fact]
-    |> Repo.preload(:question)
-    |> Repo.preload(:fact_annotations)
+    fact =
+      conn.assigns[:fact]
+      |> Repo.preload(:question)
+      |> Repo.preload(:fact_annotations)
 
     render(conn, "show.json", fact: fact)
   end
@@ -52,11 +53,13 @@ defmodule Core.FactController do
 
     case update_fact_and_annotations(changeset) do
       {:ok, fact} ->
-        fact = fact
-        |> Repo.preload(:question)
-        |> Repo.preload(:fact_annotations)
+        fact =
+          fact
+          |> Repo.preload(:question)
+          |> Repo.preload(:fact_annotations)
 
         render(conn, "show.json", fact: fact)
+
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -81,6 +84,7 @@ defmodule Core.FactController do
         |> put_status(:not_found)
         |> render(Core.ErrorView, "404.json", %{})
         |> halt()
+
       fact ->
         conn
         |> assign(:fact, fact)
@@ -92,6 +96,7 @@ defmodule Core.FactController do
       case (Repo.insert(changeset) |> insert_annotations(changeset)) do
         {:error, changeset} ->
           Repo.rollback(changeset)
+
         {:ok, fact, _annotations} ->
           fact
       end
@@ -103,6 +108,7 @@ defmodule Core.FactController do
       case (Repo.update(changeset) |> remove_annotations(changeset) |> insert_annotations(changeset)) do
         {:error, changeset} ->
           Repo.rollback(changeset)
+
         {:ok, fact, _annotations} ->
           fact
       end
@@ -111,7 +117,8 @@ defmodule Core.FactController do
 
   defp insert_annotations({:error, changeset}, _), do: {:error, changeset}
   defp insert_annotations({:ok, fact}, changeset) do
-    Ecto.Changeset.get_field(changeset, :annotations)
+    changeset
+    |> Ecto.Changeset.get_field(:annotations)
     |> Enum.map(create_changeset(fact.id))
     |> Enum.reduce({:ok, fact, []}, &insert_annotation/2)
   end
