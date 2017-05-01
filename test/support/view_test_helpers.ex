@@ -10,6 +10,8 @@ defmodule Core.ViewTestHelpers do
   @doc """
   Try to match a JSON `response` with a schema.
   """
+  def check_view(response, schema)
+
   def check_view(response, "annotation.json") do
     %{"id" => _,
       "author" => _,
