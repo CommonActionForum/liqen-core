@@ -17,17 +17,34 @@ defmodule Core.ViewTestHelpers do
       "target" => _,
       "tags" => tags} = response
 
-    Enum.all?(tags, fn tag ->
-      %{"id" => _,
-        "title" => _} = tag
-    end)
+    check_array_view(tags, "tag.json")
   end
 
   def check_view(response, "error.json") do
     %{"errors" => _} = response
   end
 
-  def check_view(response, "summary.json") do
-    [] = response
+  @doc """
+  Try to match all elements of a JSON array `response` with a schema
+  """
+  def check_array_view(response, asset_or_fun \\ fn x -> x end)
+
+  def check_array_view(response, "annotation.json") do
+    check_array_view response, fn s ->
+      %{"id" => _,
+        "article_id" => _,
+        "author" => _} = s
+    end
+  end
+
+  def check_array_view(response, "tag.json") do
+    check_array_view response, fn t ->
+      %{"id" => _,
+        "title" => _} = t
+    end
+  end
+
+  def check_array_view(response, fun) do
+    Enum.all?(response, fun)
   end
 end
