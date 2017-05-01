@@ -20,7 +20,7 @@ defmodule Core.AnnotationControllerTest do
     conn
     |> get(annotation_path(conn, :index))
     |> json_response(:ok)
-    |> check_view("summary.json")
+    |> check_array_view("annotation.json")
     |> assert()
   end
 
