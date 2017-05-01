@@ -16,7 +16,18 @@ defmodule Core.AnnotationControllerTest do
     {:ok, %{conn: conn, user: user}}
   end
 
-  test "List of Annotations", %{conn: conn} do
+  test "List of 0 Annotations", %{conn: conn} do
+    conn
+    |> get(annotation_path(conn, :index))
+    |> json_response(:ok)
+    |> check_array_view("annotation.json")
+    |> assert()
+  end
+
+  test "List of 1 Annotation", %{conn: conn, user: user} do
+    article = insert_article()
+    annotation = insert_annotation(user, %{article_id: article.id})
+
     conn
     |> get(annotation_path(conn, :index))
     |> json_response(:ok)
