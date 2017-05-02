@@ -10,6 +10,7 @@ Having an access token doesn't guarantee that all operations can be performed. S
 
 Depending on the response, you can guess what is the reason of the rejection. If the access token is not valid, a `401` error code will be responsed. If the token is correct but the user has no permissions, a `403` error code is returned.
 
+{% method %}
 ## Obtain the access token
 
 Send your account data (e-mail and password) to the endpoint and get the access token.
@@ -23,6 +24,25 @@ Name     | Type   | Description
 email    | string | **Required**. E-mail of the user
 password | string | **Required**. Password of the user
 
+{% sample lang="bash" %}
+### Request
+
+```bash
+curl -v https://liqen-core.herokuapp.com/sessions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "email": "john@example.com",
+        "password": "secret"
+    }'
+```
+
+{% sample lang="js" %}
+### Request
+
+```js
+```
+
+{% common %}
 ### Example successful (**201**) response
 
 ```json
@@ -34,6 +54,8 @@ password | string | **Required**. Password of the user
     }
 }
 ```
+
+{% endmethod %}
 
 The access token will also be included in the `Authorization` header
 
