@@ -128,7 +128,8 @@ Get an annotation
         "prefix": "ven mejores oportunidades en esas tierras, en un ",
         "exact": "éxodo",
         "suffix": " que ha visto emigraciones"
-    }
+    },
+    "tags": [1, 2]
 }
 ```
 
@@ -146,7 +147,6 @@ Create an annotation
         "value": "id1"
     },
     "tags": [1]
->>>>>>> minimum-answer
 }
 ```
 
