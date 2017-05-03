@@ -24,7 +24,7 @@ defmodule Core.Router do
     resources "/articles", ArticleController, except: [:new, :edit]
     resources "/annotations", AnnotationController, except: [:new, :edit]
     resources "/questions", QuestionController, except: [:new, :edit]
-    resources "/facts", FactController, except: [:new, :edit]
+    resources "/liqens", FactController, except: [:new, :edit]
 
     get "/private", PrivateController, :example
   end

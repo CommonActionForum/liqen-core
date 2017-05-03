@@ -4,8 +4,8 @@ In this section will be defined the concepts surrounding Liqen.
 
 > **TL;DR**
 >
-> - Questions are answered with Leeqs.
-> - A Leeq is a group of Annotations.
+> - Questions are answered with Liqens.
+> - A Liqen is a group of Annotations.
 > - Annotations are fragments of Articles.
 
 ## Ask a Question

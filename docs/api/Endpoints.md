@@ -230,10 +230,10 @@ Retrieve the information of a given question.
 }
 ```
 
-## GET /facts
-## GET /facts/:id
+## GET /liqens
+## GET /liqens/:id
 
-Retrieve a Fact
+Retrieve a Liqen
 
 #### Example of successful (**200**) response
 
@@ -256,7 +256,7 @@ Retrieve a Fact
 }
 ```
 
-## POST /facts
+## POST /liqens
 
 Creates a new Fact.
 
@@ -267,9 +267,9 @@ Creates a new Fact.
 }
 ```
 
-## PATCH /facts/:id
+## PATCH /liqens/:id
 
-Modifies a Fact
+Modifies a Liqen
 
 #### Example request 1. Editing the question
 
