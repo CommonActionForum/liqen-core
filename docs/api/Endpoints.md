@@ -60,7 +60,10 @@ Retrieve a list of articles
 [
     {
         "id": 1,
-        "title": "My first article"
+        "title": "My first article",
+        "source": {
+            "uri": "http://www.bancomundial.org/es/news/feature/2013/11/06/fuga-cerebros-latinoamerica"
+        }
     }
 ]
 ```
