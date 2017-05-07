@@ -1,6 +1,11 @@
 {
   "skip_files": [
     "test",
-    "web/views"
+    "lib/core.ex",
+    "lib/core/endpoint.ex",
+    "lib/core/repo.ex",
+    "web/gettext.ex",
+    "web/web.ex",
+    "web/channels/user_socket.ex"
   ]
 }
