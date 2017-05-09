@@ -26,6 +26,21 @@ When prompted, set the environmental variable `APP_URL_HOST` with the URL of you
 
 This means that, if you are planning to use a `herokuapp.com` domain, you should choose your App name. For example if your app name is `my-app`, the generated URL will be `https://my-app.herokuapp.com` and you have to set the variable with the value: `my-app.herokuapp.com`.
 
+## Install locally using Docker
+
+To install all and start the server
+
+```sh
+docker-compose up
+```
+
+Once you have all installed, make sure to create and migrate the database
+
+```sh
+docker-compose run web mix ecto.create
+docker-compose run web mix ecto.migrate
+```
+
 ## Install locally in your machine
 
 To run this application you need to download
