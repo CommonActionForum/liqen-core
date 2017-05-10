@@ -78,9 +78,7 @@ defmodule Core.User do
   end
 
   @doc """
-  Builds a changeset based on the `struct` and `params`.
-
-  ## Parameters
+  Builds a changeset to create a new user.
 
   Required parameters: `email`, `password`, `role`.
 
@@ -90,7 +88,7 @@ defmodule Core.User do
   - A field called `permissions` with the permissions of the user according
     to the `role`
   """
-  def changeset(struct, params \\ %{}) do
+  def registration_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [:email, :password, :role])
     |> validate_required([:email, :password, :role])

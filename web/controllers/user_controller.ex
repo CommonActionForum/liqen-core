@@ -7,7 +7,7 @@ defmodule Core.UserController do
                     type: "users"} when action in [:show]
 
   def create(conn, params) do
-    changeset = User.changeset(%User{}, params)
+    changeset = User.registration_changeset(%User{}, params)
 
     case Repo.insert(changeset) do
       {:ok, user} ->
