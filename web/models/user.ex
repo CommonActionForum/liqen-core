@@ -78,6 +78,18 @@ defmodule Core.User do
   end
 
   @doc """
+  Builds a changeset to edit an user
+  """
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:email, :password, :role])
+    |> validate_inclusion(:role, ["beta_user"])
+    |> unique_constraint(:email)
+    |> put_pass_hash()
+    |> put_permissions()
+  end
+
+  @doc """
   Builds a changeset to create a new user.
 
   Required parameters: `email`, `password`, `role`.
