@@ -3,7 +3,7 @@ defmodule Core.Mixfile do
 
   def project do
     [app: :core,
-     version: "2.1.1",
+     version: "2.2.0",
      elixir: "~> 1.2",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
