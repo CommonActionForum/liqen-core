@@ -78,9 +78,19 @@ defmodule Core.User do
   end
 
   @doc """
-  Builds a changeset based on the `struct` and `params`.
+  Builds a changeset to edit an user
+  """
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:email, :password, :role])
+    |> validate_inclusion(:role, ["beta_user"])
+    |> unique_constraint(:email)
+    |> put_pass_hash()
+    |> put_permissions()
+  end
 
-  ## Parameters
+  @doc """
+  Builds a changeset to create a new user.
 
   Required parameters: `email`, `password`, `role`.
 
@@ -90,7 +100,7 @@ defmodule Core.User do
   - A field called `permissions` with the permissions of the user according
     to the `role`
   """
-  def changeset(struct, params \\ %{}) do
+  def registration_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [:email, :password, :role])
     |> validate_required([:email, :password, :role])
