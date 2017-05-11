@@ -33,10 +33,13 @@ defmodule Core.QuestionController do
 
   def show(conn, _) do
     question = conn.assigns[:question]
-    |> Repo.preload(:question_tags)
+    query = from(qt in QuestionTag, where: qt.question_id == ^question.id)
+    answer =
+      query
+      |> Repo.all()
+      |> Enum.map(fn qt -> %{id: qt.tag_id, required: qt.required} end)
 
-    question = Map.merge(question, %{answer: question.question_tags})
-
+    question = Map.merge(question, %{answer: answer})
     render(conn, "show.json", question: question)
   end
 
