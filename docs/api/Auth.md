@@ -40,6 +40,21 @@ curl -v https://liqen-core.herokuapp.com/sessions \
 ### Request
 
 ```js
+// Create a liqen instance without access token
+const liqen = require('liqen')()
+
+//
+liqen
+  .sessions.create({
+    email: 'john@example.com',
+    password: 'secret'
+  })
+  .then(session => {
+    // Display the retrieved object
+    console.log(session.access_token)
+    console.log(session.expires)
+    console.log(session.user.id)
+  })
 ```
 
 {% common %}
@@ -59,7 +74,11 @@ curl -v https://liqen-core.herokuapp.com/sessions \
 
 The access token will also be included in the `Authorization` header
 
+{% method %}
+
 ## Use the token
+
+{% sample lang="bash" %}
 
 Include the `Authorization` header in the request with the value `Bearer <ACCESS_TOKEN>` to perform the operation.
 
@@ -72,3 +91,21 @@ curl -v https://liqen-core.herokuapp.com/annotations \
         ...
     }'
 ```
+
+{% sample lang="js" %}
+
+Once you get the token, construct a new Liqen instance, now passing the token:
+
+```js
+// Create a liqen instance with access token
+const liqen = require('liqen')('EEwJ6tF9x5WCIZDYzyZGaz6Khbw7raYRIBV_WxVvgmsG')
+
+//
+liqen
+  .annotations.create({
+    article_id: 1,
+    ...
+  })
+```
+
+{% endmethod %}
