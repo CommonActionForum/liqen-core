@@ -1,0 +1,18 @@
+{
+  "plugins": [ "theme-api" ],
+  "pluginsConfig": {
+    "theme-api": {
+      "languages": [
+        {
+          "lang": "bash",
+          "name": "Bash",
+          "default": true
+        },
+        {
+          "lang": "js",
+          "name": "JavaScript"
+        }
+      ]
+    }
+  }
+}
