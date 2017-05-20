@@ -15,7 +15,7 @@ defmodule Core.Web.Router do
     plug Guardian.Plug.LoadResource
   end
 
-  scope "/", Core do
+  scope "/", Core.Web do
     pipe_through :api
 
     resources "/users", UserController, only: [:create, :show]
