@@ -1,4 +1,4 @@
-defmodule Core.Endpoint do
+defmodule Core.Web.Endpoint do
   use Phoenix.Endpoint, otp_app: :core
 
   socket "/socket", Core.UserSocket

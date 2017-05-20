@@ -27,7 +27,7 @@ defmodule Core.ChannelCase do
 
 
       # The default endpoint for testing
-      @endpoint Core.Endpoint
+      @endpoint Core.Web.Endpoint
     end
   end
 

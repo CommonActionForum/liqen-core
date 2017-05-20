@@ -31,7 +31,7 @@ defmodule Core.ConnCase do
       import Core.ModelCase
 
       # The default endpoint for testing
-      @endpoint Core.Endpoint
+      @endpoint Core.Web.Endpoint
     end
   end
 

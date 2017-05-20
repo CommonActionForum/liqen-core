@@ -31,7 +31,7 @@ defmodule Core.UserSocket do
   # Would allow you to broadcast a "disconnect" event and terminate
   # all active sockets and channels for a given user:
   #
-  #     Core.Endpoint.broadcast("users_socket:#{user.id}", "disconnect", %{})
+  #     Core.Web.Endpoint.broadcast("users_socket:#{user.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
   def id(_socket), do: nil

@@ -15,7 +15,7 @@ defmodule Core do
       # Start the Ecto repository
       supervisor(Core.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(Core.Endpoint, []),
+      supervisor(Core.Web.Endpoint, []),
       # Start your own worker by calling:
       # Core.Worker.start_link(arg1, arg2, arg3)
       # worker(Core.Worker, [arg1, arg2, arg3]),
@@ -30,7 +30,7 @@ defmodule Core do
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
   def config_change(changed, _new, removed) do
-    Core.Endpoint.config_change(changed, removed)
+    Core.Web.Endpoint.config_change(changed, removed)
     :ok
   end
 end

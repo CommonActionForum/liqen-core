@@ -2,7 +2,7 @@
   "skip_files": [
     "test",
     "lib/core.ex",
-    "lib/core/endpoint.ex",
+    "lib/Core.Web.Endpoint.ex",
     "lib/core/repo.ex",
     "web/gettext.ex",
     "web/web.ex",
