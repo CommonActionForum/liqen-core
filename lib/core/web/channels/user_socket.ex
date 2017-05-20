@@ -1,4 +1,4 @@
-defmodule Core.UserSocket do
+defmodule Core.Web.UserSocket do
   use Phoenix.Socket
 
   # Channels

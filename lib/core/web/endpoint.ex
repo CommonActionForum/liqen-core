@@ -1,7 +1,7 @@
 defmodule Core.Web.Endpoint do
   use Phoenix.Endpoint, otp_app: :core
 
-  socket "/socket", Core.UserSocket
+  socket "/socket", Core.Web.UserSocket
 
   # Serve at "/" the static files from "priv/static" directory.
   #
