@@ -51,7 +51,7 @@ defmodule Core.AuthTest do
     |> bypass_through(Core.Web.Router, [:api])
     |> put_req_header("accept", "application/json")
     |> put_req_header("authorization", "Bearer #{jwt}")
-    |> get("/")
+    |> get("/annotations")
     |> Auth.call(%{resource: %{}, type: "super_user", action: :create})
 
     assert response(conn, :forbidden)
@@ -63,7 +63,7 @@ defmodule Core.AuthTest do
     |> bypass_through(Core.Web.Router, [:api])
     |> put_req_header("accept", "application/json")
     |> put_req_header("authorization", "Bearer #{jwt}")
-    |> get("/")
+    |> get("/annotations")
     |> Auth.call(%{resource: nil, type: "annotations", action: :create})
 
     refute conn.halted
@@ -74,7 +74,7 @@ defmodule Core.AuthTest do
     |> bypass_through(Core.Web.Router, [:api])
     |> put_req_header("accept", "application/json")
     |> put_req_header("authorization", "Bearer #{jwt}")
-    |> get("/")
+    |> get("/annotations")
     |> Auth.call(%{resource: %{author: 0}, type: "annotations", action: :create})
 
     assert response(conn, :forbidden)
