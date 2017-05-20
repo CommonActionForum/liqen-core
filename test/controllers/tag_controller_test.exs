@@ -2,7 +2,7 @@ defmodule Core.TagControllerTest do
   @moduledoc """
   Test for Core.TagController
   """
-  use Core.ConnCase
+  use Core.Web.ConnCase
 
   setup do
     user = insert_user(%{}, true)

@@ -2,7 +2,7 @@ defmodule Core.AuthTest do
   @moduledoc """
   Test for Core.Auth
   """
-  use Core.ConnCase
+  use Core.Web.ConnCase
   alias Core.Auth
 
   setup do

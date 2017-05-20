@@ -1,4 +1,4 @@
-defmodule Core.ChannelCase do
+defmodule Core.Web.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.

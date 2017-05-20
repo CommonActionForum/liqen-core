@@ -2,7 +2,7 @@ defmodule Core.UserControllerTest do
   @moduledoc """
   Test for Core.UserController
   """
-  use Core.ConnCase
+  use Core.Web.ConnCase
 
   setup do
     user = insert_user()

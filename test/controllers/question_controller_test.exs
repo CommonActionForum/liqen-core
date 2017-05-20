@@ -2,7 +2,7 @@ defmodule Core.QuestionControllerTest do
   @moduledoc """
   Test for Core.QuestionController
   """
-  use Core.ConnCase
+  use Core.Web.ConnCase
 
   setup do
     user = insert_user(%{}, true)

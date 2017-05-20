@@ -2,7 +2,7 @@ defmodule Core.ArticleControllerTest do
   @moduledoc """
   Test for Core.ArticleController
   """
-  use Core.ConnCase
+  use Core.Web.ConnCase
 
   setup do
     user = insert_user(%{}, true)
