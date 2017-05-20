@@ -34,7 +34,7 @@ defmodule Core.Web do
       import Ecto
       import Ecto.Query
 
-      import Core.Router.Helpers
+      import Core.Web.Router.Helpers
       import Core.Gettext
     end
   end
@@ -50,7 +50,7 @@ defmodule Core.Web do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import Core.Router.Helpers
+      import Core.Web.Router.Helpers
       import Core.ErrorHelpers
       import Core.Gettext
     end

@@ -48,7 +48,7 @@ defmodule Core.AuthTest do
 
   test "the Plug with valid session but non-valid perms", %{jwt: jwt} do
     conn = build_conn()
-    |> bypass_through(Core.Router, [:api])
+    |> bypass_through(Core.Web.Router, [:api])
     |> put_req_header("accept", "application/json")
     |> put_req_header("authorization", "Bearer #{jwt}")
     |> get("/")
@@ -60,7 +60,7 @@ defmodule Core.AuthTest do
 
   test "the Plug with valid sessions and valid perms", %{jwt: jwt} do
     conn = build_conn()
-    |> bypass_through(Core.Router, [:api])
+    |> bypass_through(Core.Web.Router, [:api])
     |> put_req_header("accept", "application/json")
     |> put_req_header("authorization", "Bearer #{jwt}")
     |> get("/")
@@ -71,7 +71,7 @@ defmodule Core.AuthTest do
 
   test "the Plug with non-valid perms (authored resource given)", %{jwt: jwt} do
     conn = build_conn()
-    |> bypass_through(Core.Router, [:api])
+    |> bypass_through(Core.Web.Router, [:api])
     |> put_req_header("accept", "application/json")
     |> put_req_header("authorization", "Bearer #{jwt}")
     |> get("/")

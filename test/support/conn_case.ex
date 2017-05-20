@@ -25,7 +25,7 @@ defmodule Core.ConnCase do
       import Ecto.Changeset
       import Ecto.Query
 
-      import Core.Router.Helpers
+      import Core.Web.Router.Helpers
       import Core.TestHelpers
       import Core.ViewTestHelpers
       import Core.ModelCase

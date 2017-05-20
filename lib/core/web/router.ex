@@ -1,4 +1,4 @@
-defmodule Core.Router do
+defmodule Core.Web.Router do
   use Core.Web, :router
 
   pipeline :browser do

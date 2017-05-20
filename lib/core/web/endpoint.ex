@@ -38,5 +38,5 @@ defmodule Core.Web.Endpoint do
     key: "_core_key",
     signing_salt: "ymvIKvrz"
 
-  plug Core.Router
+  plug Core.Web.Router
 end
