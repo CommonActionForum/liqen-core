@@ -1,3 +1,3 @@
-defmodule Core.LayoutView do
+defmodule Core.Web.LayoutView do
   use Core.Web, :view
 end

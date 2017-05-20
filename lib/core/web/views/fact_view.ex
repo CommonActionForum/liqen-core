@@ -1,12 +1,12 @@
-defmodule Core.FactView do
+defmodule Core.Web.FactView do
   use Core.Web, :view
 
   def render("index.json", %{facts: facts}) do
-    render_many(facts, Core.FactView, "summary.json")
+    render_many(facts, Core.Web.FactView, "summary.json")
   end
 
   def render("show.json", %{fact: fact}) do
-    render_one(fact, Core.FactView, "fact.json")
+    render_one(fact, Core.Web.FactView, "fact.json")
   end
 
   def render("summary.json", %{fact: fact}) do

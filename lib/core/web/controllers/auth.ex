@@ -9,11 +9,11 @@ defmodule Core.Auth do
   ### Authentication/authorization. Plug usage
 
   If the User is not authenticated, the plug will halt the connection, respond
-  a `401` error and render a `"401.json"` template from `Core.ErrorView`.
+  a `401` error and render a `"401.json"` template from `Core.Web.ErrorView`.
 
   If the User is authenticated but doesn't have the proper permissions, the
   plug will halt the connection, respond a `403` error and render a `"403.json"`
-  from `Core.ErrorView`.
+  from `Core.Web.ErrorView`.
 
   #### Options
 
@@ -71,7 +71,7 @@ defmodule Core.Auth do
       {:error, _} ->
         conn
         |> put_status(:unauthorized)
-        |> render(Core.ErrorView, "401.json", %{})
+        |> render(Core.Web.ErrorView, "401.json", %{})
         |> halt()
     end
   end
@@ -96,7 +96,7 @@ defmodule Core.Auth do
     else
       conn
       |> put_status(:forbidden)
-      |> render(Core.ErrorView, "403.json", %{})
+      |> render(Core.Web.ErrorView, "403.json", %{})
       |> halt()
     end
   end
@@ -141,7 +141,7 @@ defmodule Core.Auth do
   def unauthenticated(conn, _params) do
     conn
     |> put_status(:unauthorized)
-    |> render(Core.ErrorView, "401.json", %{})
+    |> render(Core.Web.ErrorView, "401.json", %{})
   end
 
   defp create_session(conn, user) do

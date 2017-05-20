@@ -1,4 +1,4 @@
-defmodule Core.ErrorView do
+defmodule Core.Web.ErrorView do
   use Core.Web, :view
 
   def render("404.html", _assigns) do

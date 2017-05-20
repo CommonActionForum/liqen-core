@@ -1,4 +1,4 @@
-defmodule Core.UserView do
+defmodule Core.Web.UserView do
   use Core.Web, :view
 
   def render("forbidden.json", %{}) do

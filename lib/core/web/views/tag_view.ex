@@ -1,12 +1,12 @@
-defmodule Core.TagView do
+defmodule Core.Web.TagView do
   use Core.Web, :view
 
   def render("index.json", %{tags: tags}) do
-    render_many(tags, Core.TagView, "tag.json")
+    render_many(tags, Core.Web.TagView, "tag.json")
   end
 
   def render("show.json", %{tag: tag}) do
-    render_one(tag, Core.TagView, "tag.json")
+    render_one(tag, Core.Web.TagView, "tag.json")
   end
 
   def render("tag.json", %{tag: tag}) do

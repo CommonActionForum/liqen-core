@@ -50,7 +50,7 @@ defmodule Core.Web.AnnotationController do
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render(Core.ChangesetView, "error.json", changeset: changeset)
+        |> render(Core.Web.ChangesetView, "error.json", changeset: changeset)
     end
   end
 
@@ -93,7 +93,7 @@ defmodule Core.Web.AnnotationController do
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render(Core.ChangesetView, "error.json", changeset: changeset)
+        |> render(Core.Web.ChangesetView, "error.json", changeset: changeset)
     end
   end
 
@@ -116,7 +116,7 @@ defmodule Core.Web.AnnotationController do
       nil ->
         conn
         |> put_status(:not_found)
-        |> render(Core.ErrorView, "404.json", %{})
+        |> render(Core.Web.ErrorView, "404.json", %{})
         |> halt()
 
       annotation ->

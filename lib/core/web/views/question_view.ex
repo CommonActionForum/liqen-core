@@ -1,12 +1,12 @@
-defmodule Core.QuestionView do
+defmodule Core.Web.QuestionView do
   use Core.Web, :view
 
   def render("index.json", %{questions: questions}) do
-    render_many(questions, Core.QuestionView, "summary.json")
+    render_many(questions, Core.Web.QuestionView, "summary.json")
   end
 
   def render("show.json", %{question: question}) do
-    render_one(question, Core.QuestionView, "question.json")
+    render_one(question, Core.Web.QuestionView, "question.json")
   end
 
   def render("summary.json", %{question: question}) do

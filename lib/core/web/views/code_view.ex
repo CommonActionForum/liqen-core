@@ -1,4 +1,4 @@
-defmodule Core.CodeView do
+defmodule Core.Web.CodeView do
   use Core.Web, :view
 
   def render("201.json", _) do

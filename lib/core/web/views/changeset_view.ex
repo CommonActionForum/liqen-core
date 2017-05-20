@@ -1,4 +1,4 @@
-defmodule Core.ChangesetView do
+defmodule Core.Web.ChangesetView do
   use Core.Web, :view
 
   @doc """

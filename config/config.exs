@@ -13,7 +13,7 @@ config :core,
 config :core, Core.Web.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "x8VkSW4hxZk6l0FHaopKzIhf+ek/Z/AitCEiOocQ6h6GGtpNBr2M6Fulomz34UtC",
-  render_errors: [view: Core.ErrorView, accepts: ~w(html json)],
+  render_errors: [view: Core.Web.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Core.PubSub,
            adapter: Phoenix.PubSub.PG2]
 

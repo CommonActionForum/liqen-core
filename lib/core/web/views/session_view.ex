@@ -1,4 +1,4 @@
-defmodule Core.SessionView do
+defmodule Core.Web.SessionView do
   use Core.Web, :view
 
   def render("ok.json", %{session: session}) do

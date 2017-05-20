@@ -1,12 +1,12 @@
-defmodule Core.AnnotationView do
+defmodule Core.Web.AnnotationView do
   use Core.Web, :view
 
   def render("index.json", %{annotations: annotations}) do
-    render_many(annotations, Core.AnnotationView, "summary.json")
+    render_many(annotations, Core.Web.AnnotationView, "summary.json")
   end
 
   def render("show.json", %{annotation: annotation}) do
-    render_one(annotation, Core.AnnotationView, "annotation.json")
+    render_one(annotation, Core.Web.AnnotationView, "annotation.json")
   end
 
   def render("summary.json", %{annotation: annotation}) do
