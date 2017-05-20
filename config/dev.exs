@@ -21,8 +21,8 @@ config :core, Core.Web.Endpoint,
     patterns: [
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
-      ~r{web/views/.*(ex)$},
-      ~r{web/templates/.*(eex)$}
+      ~r{lib/core/web/views/.*(ex)$},
+      ~r{lib/core/web/templates/.*(eex)$}
     ]
   ]
 
