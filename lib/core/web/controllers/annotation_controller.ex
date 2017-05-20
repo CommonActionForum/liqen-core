@@ -1,4 +1,4 @@
-defmodule Core.AnnotationController do
+defmodule Core.Web.AnnotationController do
   @moduledoc """
   Implements a Phoenix Controller for handling the calls of the API resource
   `annotation`

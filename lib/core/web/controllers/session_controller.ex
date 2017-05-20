@@ -1,4 +1,4 @@
-defmodule Core.SessionController do
+defmodule Core.Web.SessionController do
   use Core.Web, :controller
 
   alias Core.Repo

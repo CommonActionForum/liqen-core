@@ -1,4 +1,4 @@
-defmodule Core.FactController do
+defmodule Core.Web.FactController do
   use Core.Web, :controller
   alias Core.Fact
   alias Core.FactAnnotation

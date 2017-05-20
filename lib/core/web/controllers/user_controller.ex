@@ -1,4 +1,4 @@
-defmodule Core.UserController do
+defmodule Core.Web.UserController do
   use Core.Web, :controller
   alias Core.User
 

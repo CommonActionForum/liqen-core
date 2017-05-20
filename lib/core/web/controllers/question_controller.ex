@@ -1,4 +1,4 @@
-defmodule Core.QuestionController do
+defmodule Core.Web.QuestionController do
   use Core.Web, :controller
   alias Core.Question
   alias Core.QuestionTag

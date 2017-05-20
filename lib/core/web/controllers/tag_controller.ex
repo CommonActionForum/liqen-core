@@ -1,4 +1,4 @@
-defmodule Core.TagController do
+defmodule Core.Web.TagController do
   use Core.Web, :controller
   alias Core.Tag
 
