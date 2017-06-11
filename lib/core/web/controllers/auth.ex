@@ -34,7 +34,6 @@ defmodule Core.Auth do
   use Core.Web, :controller
 
   import Plug.Conn
-  import Comeonin.Bcrypt, only: [checkpw: 2]
 
   alias Core.User
 
@@ -82,10 +81,10 @@ defmodule Core.Auth do
     valid =
       case resource do
         nil ->
-          User.can?(user, action, type)
+          Core.Permissions.can?(user, action, type)
 
         _ ->
-          User.can?(user, action, type, resource)
+          Core.Permissions.can?(user, action, type, resource)
       end
 
     if valid do

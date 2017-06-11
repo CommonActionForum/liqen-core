@@ -2,7 +2,7 @@ defmodule Core.GuardianSerializer do
   @behaviour Guardian.Serializer
 
   alias Core.Repo
-  alias Core.User
+  alias Core.Accounts.User
 
   def for_token(user = %User{}), do: { :ok, "User:#{user.id}" }
   def for_token(_), do: { :error, "Unknown resource type" }

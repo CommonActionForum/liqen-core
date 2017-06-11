@@ -8,7 +8,7 @@ defmodule Core.Annotation do
   :---------------- | :------------- | :---------------------
   `target`          | `Core.Target`  |
   `article`         | `belongs_to`   | `Core.Article`
-  `user`            | `belongs_to`   | `Core.User`
+  `user`            | `belongs_to`   | `Core.Account.User`
   `annotation_tags` | `many_to_many` | `Core.Tag` through `Core.AnnotationTag`
 
   Not all fields are required for creating/updating Annotations. See
@@ -20,7 +20,7 @@ defmodule Core.Annotation do
     field :target, Core.Target
 
     belongs_to :article, Core.Article
-    belongs_to :user, Core.User, foreign_key: :author
+    belongs_to :user, Core.Accounts.User, foreign_key: :author
 
     many_to_many :annotation_tags, Core.Tag, join_through: Core.AnnotationTag
 
