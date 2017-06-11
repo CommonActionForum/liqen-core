@@ -4,8 +4,6 @@ defmodule Core.Permissions do
   """
   use Core.Web, :model
 
-  alias Core.Accounts.User
-
   @doc """
   Put permissions to a changeset
   """
@@ -36,7 +34,7 @@ defmodule Core.Permissions do
 
   Generally instead of using this, use `can?/3` and `can?/4`
   """
-  def can?(user = %User{}, permission) do
+  def can?(user, permission) do
     Enum.member?(user.permissions, "super_user") or
     Enum.member?(user.permissions, permission)
   end
