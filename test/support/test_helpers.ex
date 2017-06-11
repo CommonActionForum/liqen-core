@@ -8,19 +8,12 @@ defmodule Core.TestHelpers do
                           password: "secret",
                           role: "beta_user"}, attrs)
 
-    changeset = %Core.User{}
-    |> Core.User.changeset(changes)
-
-    changeset =
-      case root do
-        true ->
-          changeset
-          |> Ecto.Changeset.put_change(:permissions, ["super_user"])
-        _ ->
-          changeset
-      end
-
-    Repo.insert!(changeset)
+    case root do
+      true ->
+        Core.Registration.create_account(Map.put(changes, :role, "admin"))
+      _ ->
+        Core.Registration.create_account(changes)
+    end
   end
 
   def insert_tag(attrs \\ %{}) do
