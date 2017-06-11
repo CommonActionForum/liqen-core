@@ -10,7 +10,7 @@ defmodule Core.TestHelpers do
 
     case root do
       true ->
-        {:ok, user} = Core.Registration.create_account(Map.put(changes, :role, "admin"))
+        {:ok, user} = Core.Registration.create_account(Map.put(changes, :role, "root"))
         user
       _ ->
         {:ok, user} = Core.Registration.create_account(changes)

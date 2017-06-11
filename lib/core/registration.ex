@@ -33,7 +33,7 @@ defmodule Core.Registration do
   def create_user_changeset(struct, params \\ %{}) do
     valid_roles = [
       "beta_user",
-      "admin"
+      "root"
     ]
 
     struct

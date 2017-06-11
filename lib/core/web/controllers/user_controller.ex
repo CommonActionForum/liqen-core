@@ -1,6 +1,6 @@
 defmodule Core.Web.UserController do
   use Core.Web, :controller
-  alias Core.User
+  alias Core.Accounts.User
 
   plug :find when action in [:show]
   plug Core.Auth, %{key: :user,
