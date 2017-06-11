@@ -58,6 +58,9 @@ defmodule Core.Permissions do
       can?(user, "#{action}_users") and object.id === user.id
     )
   end
+  def can?(user, "create", type, object) do
+    false
+  end
   def can?(user, action, type, object) do
     can?(user, action, type) or (
       can?(user, "#{action}_#{type}") and object.author === user.id
