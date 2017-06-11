@@ -14,30 +14,6 @@ defmodule Core.AuthTest do
     {:ok, %{user: user, jwt: jwt}}
   end
 
-  test "login with valid credentials", %{user: repo_user} do
-    conn = build_conn()
-
-    case Auth.login(conn, "matt@example.com", "secret", repo: Core.Repo) do
-      {:ok, conn} ->
-        %{user: conn_user} = conn.assigns.current_session
-        assert conn_user.id === repo_user.id
-
-      {:error, _, _} ->
-        assert false
-    end
-  end
-
-  test "login with non-valid credentials" do
-    conn = build_conn()
-
-    case Auth.login(conn, "john@example.com", "secret", repo: Core.Repo) do
-      {:ok, _} -> assert false
-
-      {:error, error_type, _} ->
-        assert error_type === :unauthorized
-    end
-  end
-
   test "the Plug with non-valid session" do
     conn = build_conn()
     |> Auth.call(%{resource: %{}, type: "", action: :create})
@@ -53,6 +29,7 @@ defmodule Core.AuthTest do
     |> put_req_header("authorization", "Bearer #{jwt}")
     |> get("/annotations")
     |> Auth.call(%{resource: %{}, type: "super_user", action: :create})
+
 
     assert response(conn, :forbidden)
     assert conn.halted

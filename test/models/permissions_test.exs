@@ -39,5 +39,12 @@ defmodule Core.PermissionsTest do
     assert Permissions.can?(yes2, "edit", "articles", obj)
     refute Permissions.can?(no, "edit", "articles", obj)
   end
+
+  test "can?/4 2" do
+    user = insert_user()
+    obj  = %{author: 0}
+
+    refute Permissions.can?(user, :create, "annotations", obj)
+  end
 end
 
