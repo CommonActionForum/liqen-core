@@ -7,7 +7,8 @@ defmodule Core.Permissions do
   @doc """
   Put permissions to a changeset
   """
-  def put_permissions(changeset = %Ecto.Changeset{valid?: true, changes: %{role: role}}) do
+  def put_permissions(changeset = %Ecto.Changeset{valid?: true,
+                                                  changes: %{role: role}}) do
     permissions =
       case role do
         "root" -> ["super_user"]
