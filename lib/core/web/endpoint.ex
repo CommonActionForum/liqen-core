@@ -38,5 +38,10 @@ defmodule Core.Web.Endpoint do
     key: "_core_key",
     signing_salt: "ymvIKvrz"
 
+  plug Corsica,
+    origins: "*",
+    allow_headers: ["authorization", "content-type"],
+    log: [rejected: :error, invalid: :info, accepted: :info]
+
   plug Core.Web.Router
 end
