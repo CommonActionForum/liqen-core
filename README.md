@@ -1,7 +1,5 @@
-[![Build Status](https://travis-ci.org/exacs/liqen-core.svg?branch=master)](https://travis-ci.org/exacs/liqen-core)
-[![Coverage Status](https://coveralls.io/repos/github/exacs/liqen-core/badge.svg?branch=master)](https://coveralls.io/github/exacs/liqen-core?branch=master)
-
-These are the docs of the Core Repo itself. If you are looking for the Liqen API docs, go to [http://exacs.github.io/liqen-docs](http://exacs.github.io/liqen-docs)
+[![Build Status](https://travis-ci.org/CommonActionForum/liqen-core.svg?branch=master)](https://travis-ci.org/CommonActionForum/liqen-core)
+[![Coverage Status](https://coveralls.io/repos/github/CommonActionForum/liqen-core/badge.svg?branch=master)](https://coveralls.io/github/CommonActionForum/liqen-core?branch=master)
 
 # Liqen Core
 
