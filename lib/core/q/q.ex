@@ -55,17 +55,19 @@ defmodule Core.Q do
     end
   end
 
-  def get_all_questions() do
+  def get_all_questions do
   end
 
-  def get_all_annotations() do
+  def get_all_annotations do
   end
 
-  def get_all_liqens() do
+  def get_all_liqens do
   end
 
-  def get_all_tags() do
-    Repo.all(Tag)
+  def get_all_tags do
+    tags = Repo.all(Tag)
+
+    tags
     |> Enum.map fn tag ->
       Map.take(tag, [:id, :title])
     end
