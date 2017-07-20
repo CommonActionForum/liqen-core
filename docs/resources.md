@@ -1,18 +1,19 @@
 # Types and resources
 
-These are the main **resources** in Liqen
+These are the main **types** in Liqen. A type is like a class in a Object Oriented Programming Language.
 
-1. Annotation. Plural: annotations
-2. Article. Plural: articles
-3. Liqen. Plural: liqens
-4. Question. Plural: questions
-5. Tag. Plural: tags
-6. User. Plural: users
+Some types are also resources and they have an URI to represent a collection of them.
 
-The following represents a **type**. We can considered them also like resources but without any URI associated to them.
-
-1. Concept. Plural: concepts
-2. Fragment. Plural: fragments
+Name       | Plural       | URI
+-----------|--------------|--------
+Annotation | annotations  | /annotations
+Article    | articles     | /articles
+Concept    | concepts     |
+Fragment   | fragments    |
+Liqen      | liqens       | /liqens
+Question   | questions    | /questions
+Tag        | tags         | /tags
+User       | users        | /users
 
 ---
 
