@@ -41,7 +41,8 @@ defmodule Core.Permissions do
   end
 
   @doc """
-  Check if a `user` has permissions to do an `action` to a `resource` of a `type`
+  Check if a `user` has permissions to do perform an `action` to a `resource`
+  of a `type`
   """
   def check_permissions(user, action, type, object) do
     case can?(user, action, type, object) do
