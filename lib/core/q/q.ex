@@ -67,9 +67,7 @@ defmodule Core.Q do
     tags = Repo.all(Tag)
 
     tags
-    |> Enum.map fn tag ->
-      Map.take(tag, [:id, :title])
-    end
+    |> Enum.map(fn tag -> Map.take(tag, [:id, :title]) end)
   end
 
   def create_question(author, params) do
