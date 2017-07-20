@@ -35,6 +35,7 @@ defmodule Core.Q do
   """
 
   alias Core.Repo
+  alias Core.Q.Tag
 
   def get_question(id) do
   end
@@ -46,6 +47,12 @@ defmodule Core.Q do
   end
 
   def get_tag(id) do
+    case Repo.get(Tag, id) do
+      tag = %Tag{} ->
+        {:ok, Map.take(tag, [:id, :title])}
+      _ ->
+        {:error, :not_found}
+    end
   end
 
   def get_all_questions() do
@@ -58,6 +65,10 @@ defmodule Core.Q do
   end
 
   def get_all_tags() do
+    Repo.all(Tag)
+    |> Enum.map fn tag ->
+      Map.take(tag, [:id, :title])
+    end
   end
 
   def create_question(author, params) do
