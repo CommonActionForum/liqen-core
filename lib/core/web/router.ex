@@ -27,10 +27,10 @@ defmodule Core.Web.Router do
     resources "/liqens", FactController, except: [:new, :edit]
 
     scope "/v3", V3, as: :v3 do
-      resources "/annotations", TagController, except: [:new, :edit]
-      resources "/articles", TagController, except: [:new, :edit]
-      resources "/liqens", TagController, except: [:new, :edit]
-      resources "/questions", TagController, except: [:new, :edit]
+      resources "/annotations", AnnotationController, except: [:new, :edit]
+      resources "/articles", ArticleController, except: [:new, :edit]
+      resources "/liqens", LiqenController, except: [:new, :edit]
+      resources "/questions", QuestionController, except: [:new, :edit]
       resources "/tags", TagController, except: [:new, :edit]
       resources "/users", UserController, only: [:create, :show]
 
