@@ -1,6 +1,13 @@
 defmodule Core.TestHelpers do
   alias Core.Repo
 
+  defp rand do
+    Base.encode16(:crypto.strong_rand_bytes(8))
+  end
+
+  def insert_tag() do
+    Repo.insert!(%Core.Q.Tag{title: "Example tag #{rand()}"})
+  end
 
   def insert_user(), do: insert_user(%{}, false)
   def insert_user(attrs, root \\ false) do
@@ -18,7 +25,7 @@ defmodule Core.TestHelpers do
     end
   end
 
-  def insert_tag(attrs \\ %{}) do
+  def insert_tag(attrs) do
     changes = Map.merge(%{title: "Example tag"}, attrs)
 
     %Core.Tag{}
