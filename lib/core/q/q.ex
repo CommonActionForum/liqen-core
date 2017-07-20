@@ -104,6 +104,14 @@ defmodule Core.Q do
   end
 
   def update_tag(author, id, params) do
+    with {:ok, tag} <-
+           get_tag(id),
+         {:ok, _} <-
+           Permissions.check_permissions(author, "update", "tags", tag)
+    do
+      {:ok, changeset} = create_tag_changeset(Map.merge(%Tag{}, tag), params)
+      Repo.update(changeset)
+    end
   end
 
   def delete_question(author, id) do

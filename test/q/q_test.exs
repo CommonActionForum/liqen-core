@@ -83,4 +83,20 @@ defmodule Core.QTest do
   test "Create tag without permissions", %{user: user} do
     assert {:error, :forbidden} = Q.create_tag(user, %{title: "Tag"})
   end
+
+  test "Update tag", %{root: root, tags: [t1, _, _, _, _]} do
+    assert {:ok, %{title: "Tagg"}} = Q.update_tag(root, t1.id, %{title: "Tagg"})
+  end
+
+  test "Update not found", %{root: root, tags: [t1, _, _, _, _]} do
+    assert {:error, :not_found} = Q.update_tag(root, 0, %{})
+  end
+
+  test "Update without parameters", %{root: root, tags: [t1, _, _, _, _]} do
+    assert {:ok, _} = Q.update_tag(root, t1.id, %{})
+  end
+
+  test "Update without permissions", %{user: user, tags: [t1, _, _, _, _]} do
+    assert {:error, :forbidden} = Q.update_tag(user, t1.id, %{title: "Tagg"})
+  end
 end
