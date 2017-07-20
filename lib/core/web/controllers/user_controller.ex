@@ -6,22 +6,18 @@ defmodule Core.Web.UserController do
   plug Core.Auth, %{key: :user,
                     type: "users"} when action in [:show]
 
-  def create(conn, params) do
-    case Core.Registration.create_account(params) do
-      {:ok, user} ->
-        conn
-        |> put_status(:created)
-        |> render("created.json", user: user)
+  action_fallback Core.Web.FallbackController
 
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Core.Web.ChangesetView, "error.json", changeset: changeset)
+  def create(conn, params) do
+    with {:ok, user} <- Core.Registration.create_account(params) do
+      conn
+      |> put_status(:created)
+      |> render("created.json", user: user)
     end
   end
 
-  def show(conn, _params) do
-    user = Guardian.Plug.current_resource(conn)
+  def show(conn, _) do
+    user = conn.assigns.user
 
     conn
     |> put_status(:ok)
@@ -29,16 +25,16 @@ defmodule Core.Web.UserController do
   end
 
   defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
-    case Repo.get(User, id) do
-      nil ->
+    case Core.Accounts.get_user(id) do
+      {:ok, user} ->
+        conn
+        |> assign(:user, user)
+
+      {:error, :not_found} ->
         conn
         |> put_status(:not_found)
         |> render(Core.Web.ErrorView, "404.json", %{})
         |> halt()
-
-      user ->
-        conn
-        |> assign(:user, user)
     end
   end
 end
