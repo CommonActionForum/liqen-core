@@ -18,7 +18,6 @@ defmodule Core.Web.Router do
   scope "/", Core.Web do
     pipe_through :api
 
-    resources "/users", UserController, only: [:create, :show]
     resources "/sessions", SessionController, only: [:create, :delete]
     resources "/tags", TagController, except: [:new, :edit]
     resources "/articles", ArticleController, except: [:new, :edit]

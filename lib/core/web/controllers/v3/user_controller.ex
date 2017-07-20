@@ -1,4 +1,4 @@
-defmodule Core.Web.UserController do
+defmodule Core.Web.V3.UserController do
   use Core.Web, :controller
   alias Core.Accounts.User
 
@@ -23,7 +23,7 @@ defmodule Core.Web.UserController do
 
     conn
     |> put_status(:ok)
-    |> render(Core.Web.UserView, "show.json", user: user)
+    |> render("show.json", user: user)
   end
 
   defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
