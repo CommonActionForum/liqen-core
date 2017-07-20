@@ -34,7 +34,9 @@ defmodule Core.Q do
     {:error, :forbidden}
   """
 
+  use Core.Web, :model
   alias Core.Repo
+  alias Core.Permissions
   alias Core.Q.Tag
 
   def get_question(id) do
@@ -83,6 +85,13 @@ defmodule Core.Q do
   end
 
   def create_tag(author, params) do
+    with {:ok, _} <-
+           Permissions.check_permissions(author, "create", "tags"),
+         {:ok, changeset} <-
+           create_tag_changeset(params)
+    do
+      Repo.insert(Map.merge(%Tag{}, changeset))
+    end
   end
 
   def update_question(author, id, params) do
@@ -107,5 +116,17 @@ defmodule Core.Q do
   end
 
   def delete_tag(author, id) do
+  end
+
+  defp create_tag_changeset(params) do
+    changeset =
+      %Tag{}
+      |> cast(params, [:title])
+      |> validate_required([:title])
+
+    case changeset do
+      %{valid?: true} -> {:ok, changeset}
+      _ -> {:error, changeset}
+    end
   end
 end

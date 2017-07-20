@@ -3,6 +3,10 @@ defmodule Core.QTest do
   alias Core.Q
 
   setup do
+    # Insert 2 users
+    user = insert_user()
+    root = insert_user(%{}, true)
+
     # Insert 2 articles
     # ar1 = insert_article()
     # ar2 = insert_article()
@@ -31,8 +35,10 @@ defmodule Core.QTest do
 
     {:ok, %{# questions: [q1, q2],
         # annotations: [a1, a2, a3, a4, a5],
-        tags: [t1, t2, t3, t4, t5]
-        #liqens: [l1, l2]
+        tags: [t1, t2, t3, t4, t5],
+        #liqens: [l1, l2],
+        user: user,
+        root: root
      }}
   end
 
@@ -64,5 +70,17 @@ defmodule Core.QTest do
     ]
 
     assert expected == Q.get_all_tags()
+  end
+
+  test "Create tag", %{root: root} do
+    assert {:ok, _} = Q.create_tag(root, %{title: "Tag"})
+  end
+
+  test "Create non-valid tag", %{root: root} do
+    assert {:error, %Ecto.Changeset{}} = Q.create_tag(root, %{})
+  end
+
+  test "Create tag without permissions", %{user: user} do
+    assert {:error, :forbidden} = Q.create_tag(user, %{title: "Tag"})
   end
 end
