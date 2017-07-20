@@ -124,6 +124,13 @@ defmodule Core.Q do
   end
 
   def delete_tag(author, id) do
+    with {:ok, tag} <-
+           get_tag(id),
+         {:ok, _} <-
+           Permissions.check_permissions(author, "delete", "tags", tag)
+    do
+      Repo.delete(Map.merge(%Tag{}, tag))
+    end
   end
 
   defp create_tag_changeset(struct, params) do

@@ -99,4 +99,16 @@ defmodule Core.QTest do
   test "Update without permissions", %{user: user, tags: [t1, _, _, _, _]} do
     assert {:error, :forbidden} = Q.update_tag(user, t1.id, %{title: "Tagg"})
   end
+
+  test "Delete tag", %{root: root, tags: [t1, _, _, _, _]} do
+    assert {:ok, _} = Q.delete_tag(root, t1.id)
+  end
+
+  test "Delete tag without permissions", %{user: user, tags: [t1, _, _, _, _]} do
+    assert {:error, :forbidden} = Q.delete_tag(user, t1.id)
+  end
+
+  test "Delete tag not found", %{root: root, tags: [_, _, _, _, _]} do
+    assert {:error, :not_found} = Q.delete_tag(root, 0)
+  end
 end
