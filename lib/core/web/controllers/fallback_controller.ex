@@ -16,4 +16,10 @@ defmodule Core.Web.FallbackController do
     |> put_status(:not_found)
     |> render(Core.Web.ErrorView, "404.json", %{})
   end
+
+  def call(conn, {:error, :forbidden}) do
+    conn
+    |> put_status(:forbidden)
+    |> render(Core.Web.ErrorView, "403.json", %{})
+  end
 end
