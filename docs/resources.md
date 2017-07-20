@@ -26,7 +26,7 @@ User       | users        | /users
   "source": Article,   // Reference to the information source
   "target": Fragment,  // Reference to the part of the information source
   "tags": [Tag],       // Tags of the annotation
-  "type": Concept      // Semantic classification of the annotation
+  "concept": Concept   // Semantic classification of the annotation
 }
 ```
 
