@@ -23,7 +23,7 @@ defmodule Core.Mixfile do
     [mod: {Core, []},
      applications: [
        :phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-       :phoenix_ecto, :postgrex, :comeonin]]
+       :phoenix_ecto, :postgrex, :comeonin, :corsica]]
   end
 
   # Specifies which paths to compile per environment.
@@ -46,6 +46,7 @@ defmodule Core.Mixfile do
      {:ex_doc, "~> 0.14", only: :dev, runtime: false},
      {:excoveralls, "~> 0.6", only: :test},
      {:dogma, "~> 0.1", only: [:dev, :test]},
+     {:corsica, "~> 1.0"},
      {:cowboy, "~> 1.0"}]
   end
 
