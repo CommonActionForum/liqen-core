@@ -3,8 +3,7 @@ defmodule Core.Web.UserController do
   alias Core.Accounts.User
 
   plug :find when action in [:show]
-  plug Core.Auth, %{key: :user,
-                    type: "users"} when action in [:show]
+  plug Core.Web.Authentication
 
   action_fallback Core.Web.FallbackController
 
