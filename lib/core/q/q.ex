@@ -49,11 +49,8 @@ defmodule Core.Q do
   end
 
   def get_tag(id) do
-    case Repo.get(Tag, id) do
-      tag = %Tag{} ->
-        {:ok, Map.take(tag, [:id, :title])}
-      _ ->
-        {:error, :not_found}
+    with {:ok, tag} <- get(Tag, id) do
+      {:ok, Map.take(tag, [:id, :title])}
     end
   end
 
@@ -105,11 +102,11 @@ defmodule Core.Q do
 
   def update_tag(author, id, params) do
     with {:ok, tag} <-
-           get_tag(id),
+           get(Tag, id),
          {:ok, _} <-
            Permissions.check_permissions(author, "update", "tags", tag)
     do
-      {:ok, changeset} = create_tag_changeset(Map.merge(%Tag{}, tag), params)
+      {:ok, changeset} = create_tag_changeset(tag, params)
       Repo.update(changeset)
     end
   end
@@ -125,11 +122,11 @@ defmodule Core.Q do
 
   def delete_tag(author, id) do
     with {:ok, tag} <-
-           get_tag(id),
+           get(Tag, id),
          {:ok, _} <-
            Permissions.check_permissions(author, "delete", "tags", tag)
     do
-      Repo.delete(Map.merge(%Tag{}, tag))
+      Repo.delete(tag)
     end
   end
 
@@ -142,6 +139,15 @@ defmodule Core.Q do
     case changeset do
       %{valid?: true} -> {:ok, changeset}
       _ -> {:error, changeset}
+    end
+  end
+
+  defp get(struct, id) do
+    case Repo.get(struct, id) do
+      obj = %struct{} ->
+        {:ok, obj}
+      _ ->
+        {:error, :not_found}
     end
   end
 end
