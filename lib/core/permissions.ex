@@ -36,7 +36,7 @@ defmodule Core.Permissions do
   def check_permissions(user, action, type) do
     case can?(user, action, type) do
       true -> {:ok, user}
-      nil -> {:error, :forbidden}
+      false -> {:error, :forbidden}
     end
   end
 
