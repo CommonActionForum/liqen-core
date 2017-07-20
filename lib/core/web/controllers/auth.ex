@@ -2,9 +2,7 @@ defmodule Core.Auth do
   @moduledoc """
   This module handles user sessions, authentication and authorization.
 
-  1. Use the function `login/4` to start a session of a user.
-  2. To check authentication/authorization of a user, `plug` this in a
-     controller.
+  To check authentication/authorization of a user, `plug` this in a controller.
 
   ### Authentication/authorization. Plug usage
 
@@ -36,7 +34,6 @@ defmodule Core.Auth do
   use Core.Web, :controller
 
   import Plug.Conn
-  import Comeonin.Bcrypt, only: [checkpw: 2]
 
   alias Core.User
 
@@ -84,10 +81,10 @@ defmodule Core.Auth do
     valid =
       case resource do
         nil ->
-          User.can?(user, action, type)
+          Core.Permissions.can?(user, action, type)
 
         _ ->
-          User.can?(user, action, type, resource)
+          Core.Permissions.can?(user, action, type, resource)
       end
 
     if valid do
@@ -101,40 +98,6 @@ defmodule Core.Auth do
     end
   end
 
-  # TODO
-  # Remove this function from here
-  # Put in SessionController
-
-  @doc """
-  Tries to authenticate a user and if success, starts a session for them
-
-  ## Parameters
-
-  - `conn`. A `Plug.Conn.t` object
-  - `email`. The e-mail input
-  - `pass`. The password input
-  - `opts`. Map with options:
-    - `repo`. Object used to retrieve the user real e-mail/password
-
-  ## Returns
-
-  - If login is successful, returns the `{:ok, conn}` tuple, where `conn` has
-    `assign`-ed a `session`-like map with the user object, the JWT token and
-    the expiration data
-  """
-  def login(conn, email, pass, opts) do
-    repo = Keyword.fetch!(opts, :repo)
-    user = repo.get_by(User, email: email)
-
-    cond do
-      user && checkpw(pass, user.crypted_password) ->
-        {:ok, create_session(conn, user)}
-
-      true ->
-        {:error, :unauthorized, conn}
-    end
-  end
-
   @doc """
   Handles requests that doesn't pass the authentication/authorization
   """
@@ -142,22 +105,5 @@ defmodule Core.Auth do
     conn
     |> put_status(:unauthorized)
     |> render(Core.Web.ErrorView, "401.json", %{})
-  end
-
-  defp create_session(conn, user) do
-    new_conn = Guardian.Plug.api_sign_in(conn, user)
-    jwt = Guardian.Plug.current_token(new_conn)
-
-    case Guardian.Plug.claims(new_conn) do
-      {:ok, claims} ->
-        session = %{user: user, jwt: jwt, exp: Map.get(claims, "exp")}
-
-        conn
-        |> assign(:current_session, session)
-
-      {:error, _} ->
-        conn
-        |> assign(:current_session, nil)
-    end
   end
 end

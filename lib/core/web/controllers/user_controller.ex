@@ -1,15 +1,13 @@
 defmodule Core.Web.UserController do
   use Core.Web, :controller
-  alias Core.User
+  alias Core.Accounts.User
 
   plug :find when action in [:show]
   plug Core.Auth, %{key: :user,
                     type: "users"} when action in [:show]
 
   def create(conn, params) do
-    changeset = User.registration_changeset(%User{}, params)
-
-    case Repo.insert(changeset) do
+    case Core.Registration.create_account(params) do
       {:ok, user} ->
         conn
         |> put_status(:created)

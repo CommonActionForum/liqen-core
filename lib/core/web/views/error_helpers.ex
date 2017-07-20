@@ -9,7 +9,8 @@ defmodule Core.ErrorHelpers do
   Generates tag for inlined form input errors.
   """
   def error_tag(form, field) do
-    if error = form.errors[field] do
+    if form.errors[field] do
+      error = form.erros[field]
       content_tag :span, translate_error(error), class: "help-block"
     end
   end
@@ -31,7 +32,8 @@ defmodule Core.ErrorHelpers do
     #     dngettext "errors", "1 file", "%{count} files", count
     #     dgettext "errors", "is invalid"
     #
-    if count = opts[:count] do
+    if opts[:count] do
+      count = opts[:count]
       Gettext.dngettext(Core.Gettext, "errors", msg, msg, count, opts)
     else
       Gettext.dgettext(Core.Gettext, "errors", msg, opts)
