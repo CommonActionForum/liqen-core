@@ -8,7 +8,10 @@ defmodule Core.Web.UserController do
   action_fallback Core.Web.FallbackController
 
   def create(conn, params) do
-    with {:ok, user} <- Core.Registration.create_account(params) do
+    author = conn.assigns.current_user
+
+    with {:ok, _} <- Core.Permissions.check_permissions(author, "create", "user"),
+         {:ok, user} <- Core.Registration.create_account(params) do
       conn
       |> put_status(:created)
       |> render("created.json", user: user)

@@ -31,6 +31,16 @@ defmodule Core.Permissions do
   def put_permissions(changeset), do: changeset
 
   @doc """
+  Check if a `user` has permissions to do an `action` to a resource of a `type`
+  """
+  def check_permissions(user, action, type) do
+    case can?(user, action, type) do
+      true -> {:ok, user}
+      nil -> {:error, :forbidden}
+    end
+  end
+
+  @doc """
   Check if a `user` has a `permission`
 
   Generally instead of using this, use `can?/3` and `can?/4`
