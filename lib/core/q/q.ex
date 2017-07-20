@@ -88,9 +88,9 @@ defmodule Core.Q do
     with {:ok, _} <-
            Permissions.check_permissions(author, "create", "tags"),
          {:ok, changeset} <-
-           create_tag_changeset(params)
+           create_tag_changeset(%Tag{}, params)
     do
-      Repo.insert(Map.merge(%Tag{}, changeset))
+      Repo.insert(changeset)
     end
   end
 
@@ -118,9 +118,9 @@ defmodule Core.Q do
   def delete_tag(author, id) do
   end
 
-  defp create_tag_changeset(params) do
+  defp create_tag_changeset(struct, params) do
     changeset =
-      %Tag{}
+      struct
       |> cast(params, [:title])
       |> validate_required([:title])
 
