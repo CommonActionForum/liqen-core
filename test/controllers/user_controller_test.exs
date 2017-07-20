@@ -1,6 +1,6 @@
 defmodule Core.UserControllerTest do
   @moduledoc """
-  Test for Core.UserController
+  Test for Core.Web.V3.UserController
   """
   use Core.Web.ConnCase
 
@@ -30,20 +30,44 @@ defmodule Core.UserControllerTest do
                "password" => "12345",
                "role" => "beta_user"}
     conn = conn
-    |> post(user_path(conn, :create, params))
+    |> post(v3_user_path(conn, :create, params))
 
     assert json_response(conn, :created)
   end
 
+  test "Fail to create a user (not enough permissions)", %{conn: conn} do
+    params = %{"email" => "john@example.com",
+               "password" => "12345",
+               "role" => "beta_user"}
+
+    conn = conn
+    |> post(v3_user_path(conn, :create, params))
+
+    assert json_response(conn, :forbidden)
+  end
+
   test "Retrieve a user", %{conn: conn, user: user} do
     conn = conn
-    |> get(user_path(conn, :show, user.id))
+    |> get(v3_user_path(conn, :show, user.id))
 
     assert json_response(conn, :ok)
   end
 
-  test "Resource not found", %{conn: conn} do
-    conn = get(conn, user_path(conn, :show, 0))
+  test "Fail to retrieve a user (not enough permissions)", %{conn: conn, user_root: user} do
+    conn = conn
+    |> get(v3_user_path(conn, :show, user.id))
+
+    assert json_response(conn, :forbidden)
+  end
+
+  test "Fail to retrieve a user (Resource not found)", %{conn_root: conn} do
+    conn = get(conn, v3_user_path(conn, :show, 0))
+
+    assert json_response(conn, :not_found)
+  end
+
+  test "Fail to retrieve a user (not enough permissions + Resource not found)", %{conn: conn} do
+    conn = get(conn, v3_user_path(conn, :show, 0))
 
     assert json_response(conn, :not_found)
   end
