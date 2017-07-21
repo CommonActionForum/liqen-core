@@ -124,7 +124,8 @@ defmodule Core.Q do
          {:ok, _} <-
            Permissions.check_permissions(author, "delete", "tags", tag)
     do
-      Repo.delete(tag)
+      {:ok, changeset} = create_tag_changeset(tag, %{})
+      Repo.delete(changeset)
     end
   end
 
@@ -133,6 +134,11 @@ defmodule Core.Q do
       struct
       |> cast(params, [:title])
       |> validate_required([:title])
+      |> foreign_key_constraint(
+        :id,
+        name: "questions_tags_tag_id_fkey",
+        message: "This tag cannot be deleted since there are questions tagged with it"
+      )
 
     case changeset do
       %{valid?: true} -> {:ok, changeset}
