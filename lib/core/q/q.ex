@@ -30,8 +30,8 @@ defmodule Core.Q do
 
   - delete_XXX(author, id, params)
 
-    Deletes an object. Returns {:ok, object}, {:error, :not_found} or
-    {:error, :forbidden}
+    Deletes an object. Returns {:ok, object}, {:error, :not_found},
+    {:error, :forbidden} or {:error, :bad_request, reason}
   """
 
   use Core.Web, :model
@@ -125,7 +125,13 @@ defmodule Core.Q do
            Permissions.check_permissions(author, "delete", "tags", tag)
     do
       {:ok, changeset} = create_tag_changeset(tag, %{})
-      take(Repo.delete(changeset))
+      case Repo.delete(changeset) do
+        {:error, _}  ->
+          {:error, :bad_request, "This tag is used in some questions and" <>
+            " cannot be deleted. Use /questions?tagged=[#{id}] to check them"}
+        {:ok, tag} ->
+          take({:ok, tag})
+      end
     end
   end
 
@@ -157,5 +163,5 @@ defmodule Core.Q do
   defp take({:ok, %Tag{} = tag}) do
     {:ok, Map.take(tag, [:id, :title])}
   end
-  defp take(any), do: any
+  # defp take(any), do: any
 end
