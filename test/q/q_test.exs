@@ -121,4 +121,8 @@ defmodule Core.QTest do
   test "Delete tag not found", %{root: root, tags: [_, _, _, _, _]} do
     assert {:error, :not_found} = Q.delete_tag(root, 0)
   end
+
+  test "Delete tag breaking ref. integrity", %{root: root, tags: [_, t2, _, _, _]} do
+    assert {:error, changeset} = Q.delete_tag(root, t2.id)
+  end
 end
