@@ -95,14 +95,17 @@ defmodule Core.QTest do
   end
 
   test "Update tag", %{root: root, tags: [t1, _, _, _, _]} do
-    assert {:ok, %{title: "Tagg"}} = Q.update_tag(root, t1.id, %{title: "Tagg"})
+    expected = %{title: "Tagg",
+                 id: t1.id}
+
+    assert {:ok, expected} == Q.update_tag(root, t1.id, %{title: "Tagg"})
   end
 
   test "Update tag. Some fields ignored", %{root: root, tags: [t1, _, _, _, _]} do
-    {:ok, tag} = Q.update_tag(root, t1.id, %{title: "Tagg",
-                                             id: 89})
-    assert %{title: "Tagg",
-             id: t1.id} == tag
+    expected = %{title: "Tagg",
+                 id: t1.id}
+
+    assert {:ok, expected} == Q.update_tag(root, t1.id, %{title: "Tagg", id: 89})
   end
 
   test "Update not found", %{root: root, tags: [t1, _, _, _, _]} do
@@ -110,7 +113,10 @@ defmodule Core.QTest do
   end
 
   test "Update without parameters", %{root: root, tags: [t1, _, _, _, _]} do
-    assert {:ok, _} = Q.update_tag(root, t1.id, %{})
+    expected = %{title: t1.title,
+                 id: t1.id}
+
+    assert {:ok, expected} == Q.update_tag(root, t1.id, %{})
   end
 
   test "Update without permissions", %{user: user, tags: [t1, _, _, _, _]} do
@@ -118,7 +124,10 @@ defmodule Core.QTest do
   end
 
   test "Delete tag", %{root: root, tags: [t1, _, _, _, _]} do
-    assert {:ok, _} = Q.delete_tag(root, t1.id)
+    expected = %{title: t1.title,
+                 id: t1.id}
+
+    assert {:ok, expected} = Q.delete_tag(root, t1.id)
   end
 
   test "Delete tag without permissions", %{user: user, tags: [t1, _, _, _, _]} do
