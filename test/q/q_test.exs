@@ -18,9 +18,19 @@ defmodule Core.QTest do
     t4 = insert_tag()
     t5 = insert_tag()
 
-    # # Insert 2 questions
-    # q1 = insert_question([t1, t2], [])
-    # q2 = insert_question([t3], [t4, t5])
+    # Insert 2 questions
+    q1 = insert_question()
+    q2 = insert_question()
+
+    # Link questions with tags
+    insert_question_tag(q1, t2, true)
+    insert_question_tag(q1, t3, true)
+    insert_question_tag(q1, t4, false)
+    insert_question_tag(q1, t5, false)
+
+    insert_question_tag(q2, t2, true)
+    insert_question_tag(q2, t3, true)
+    insert_question_tag(q2, t4, true)
 
     # # Insert 3 annotations
     # a1 = insert_annotation(ar1, t1)

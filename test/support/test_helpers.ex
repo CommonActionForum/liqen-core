@@ -9,6 +9,16 @@ defmodule Core.TestHelpers do
     Repo.insert!(%Core.Q.Tag{title: "Example tag #{rand()}"})
   end
 
+  def insert_question() do
+    Repo.insert!(%Core.Q.Question{title: "Example question #{rand()}"})
+  end
+
+  def insert_question_tag(question, tag, required) do
+    Repo.insert!(%Core.Q.QuestionTag{question_id: question.id,
+                                     tag_id: tag.id,
+                                     required: required})
+  end
+
   def insert_user(), do: insert_user(%{}, false)
   def insert_user(attrs, root \\ false) do
     changes = Map.merge(%{email: "john#{Base.encode16(:crypto.strong_rand_bytes(8))}@example.com",
@@ -33,7 +43,7 @@ defmodule Core.TestHelpers do
     |> Repo.insert!()
   end
 
-  def insert_question(attrs \\ %{}) do
+  def insert_question(attrs) do
     changes = Map.merge(%{title: "Example question",
                           answer: []}, attrs)
 
