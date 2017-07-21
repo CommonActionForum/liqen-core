@@ -136,8 +136,7 @@ defmodule Core.Q do
       |> validate_required([:title])
       |> foreign_key_constraint(
         :id,
-        name: "questions_tags_tag_id_fkey",
-        message: "This tag cannot be deleted since there are questions tagged with it"
+        name: "questions_tags_tag_id_fkey"
       )
 
     case changeset do
