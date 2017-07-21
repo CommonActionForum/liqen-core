@@ -50,7 +50,7 @@ defmodule Core.Q do
 
   def get_tag(id) do
     with {:ok, tag} <- get(Tag, id) do
-      {:ok, Map.take(tag, [:id, :title])}
+      take({:ok, tag})
     end
   end
 
@@ -85,7 +85,7 @@ defmodule Core.Q do
          {:ok, changeset} <-
            create_tag_changeset(%Tag{}, params)
     do
-      Repo.insert(changeset)
+      take(Repo.insert(changeset))
     end
   end
 
@@ -105,7 +105,7 @@ defmodule Core.Q do
            Permissions.check_permissions(author, "update", "tags", tag)
     do
       {:ok, changeset} = create_tag_changeset(tag, params)
-      Repo.update(changeset)
+      take(Repo.update(changeset))
     end
   end
 
@@ -125,7 +125,7 @@ defmodule Core.Q do
            Permissions.check_permissions(author, "delete", "tags", tag)
     do
       {:ok, changeset} = create_tag_changeset(tag, %{})
-      Repo.delete(changeset)
+      take(Repo.delete(changeset))
     end
   end
 
@@ -154,4 +154,9 @@ defmodule Core.Q do
         {:error, :not_found}
     end
   end
+
+  defp take({:ok, %Tag{} = tag}) do
+    {:ok, Map.take(tag, [:id, :title])}
+  end
+  defp take(any), do: any
 end
