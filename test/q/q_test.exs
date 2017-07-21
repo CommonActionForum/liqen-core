@@ -98,6 +98,13 @@ defmodule Core.QTest do
     assert {:ok, %{title: "Tagg"}} = Q.update_tag(root, t1.id, %{title: "Tagg"})
   end
 
+  test "Update tag. Some fields ignored", %{root: root, tags: [t1, _, _, _, _]} do
+    {:ok, tag} = Q.update_tag(root, t1.id, %{title: "Tagg",
+                                             id: 89})
+    assert %{title: "Tagg",
+             id: t1.id} == tag
+  end
+
   test "Update not found", %{root: root, tags: [t1, _, _, _, _]} do
     assert {:error, :not_found} = Q.update_tag(root, 0, %{})
   end
