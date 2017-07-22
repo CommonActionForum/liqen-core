@@ -5,7 +5,8 @@ defmodule Core.Q.Question do
   use Ecto.Schema
 
   schema "questions" do
-    field :author, {:array, :map}, virtual: true
+    field :author, :map, virtual: true
+    field :author_id, :integer
     field :title, :string
     field :required_tags, {:array, :map}, virtual: true
     field :optional_tags, {:array, :map}, virtual: true
