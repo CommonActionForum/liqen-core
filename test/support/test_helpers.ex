@@ -24,6 +24,7 @@ defmodule Core.TestHelpers do
   def insert_user(attrs, root \\ false) do
     changes = Map.merge(%{email: "john#{Base.encode16(:crypto.strong_rand_bytes(8))}@example.com",
                           password: "secret",
+                          name: "John #{rand()}",
                           role: "beta_user"}, attrs)
 
     case root do

@@ -37,7 +37,7 @@ defmodule Core.Registration do
     ]
 
     struct
-    |> cast(params, [:email, :password, :role])
+    |> cast(params, [:email, :password, :role, :name])
     |> validate_required([:email, :password, :role])
     |> validate_inclusion(:role, valid_roles)
     |> put_pass_hash()
