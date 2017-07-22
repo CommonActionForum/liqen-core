@@ -19,8 +19,8 @@ defmodule Core.QTest do
     t5 = insert_tag()
 
     # Insert 2 questions
-    q1 = insert_question()
-    q2 = insert_question()
+    q1 = insert_authored_question(root)
+    q2 = insert_authored_question(root)
 
     # Link questions with tags
     insert_question_tag(q1, t2, true)
@@ -141,9 +141,11 @@ defmodule Core.QTest do
     assert {:error, :bad_request, _} = Q.delete_tag(root, t2.id)
   end
 
-  test "Get existing Question", %{questions: [q1, _]} do
+  test "Get existing Question", %{questions: [q1, _], root: root} do
     expected = %{id: q1.id,
-                 title: q1.title}
+                 title: q1.title,
+                 author: %{id: root.id,
+                           name: root.name}}
 
     assert {:ok, expected} == Q.get_question(q1.id)
   end
@@ -152,10 +154,11 @@ defmodule Core.QTest do
     assert {:error, :not_found} == Q.get_question(0)
   end
 
-  test "Get all questions", %{questions: [q1, q2]} do
+  test "Get all questions", %{questions: [q1, q2], root: root} do
+    author = %{id: root.id, name: root.name}
     expected = [
-      %{id: q1.id, title: q1.title},
-      %{id: q2.id, title: q2.title}
+      %{id: q1.id, title: q1.title, author: author},
+      %{id: q2.id, title: q2.title, author: author}
     ]
 
     assert expected == Q.get_all_questions()

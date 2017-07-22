@@ -9,8 +9,9 @@ defmodule Core.TestHelpers do
     Repo.insert!(%Core.Q.Tag{title: "Example tag #{rand()}"})
   end
 
-  def insert_question() do
-    Repo.insert!(%Core.Q.Question{title: "Example question #{rand()}"})
+  def insert_authored_question(author) do
+    Repo.insert!(%Core.Q.Question{title: "Example question #{rand()}",
+                                  author_id: author.id})
   end
 
   def insert_question_tag(question, tag, required) do
