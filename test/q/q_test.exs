@@ -78,7 +78,7 @@ defmodule Core.QTest do
       %{id: t5.id, title: t5.title}
     ]
 
-    assert expected == Q.get_all_tags()
+    assert {:ok, expected} == Q.get_all_tags()
   end
 
   test "Create tag", %{root: root} do
@@ -161,6 +161,6 @@ defmodule Core.QTest do
       %{id: q2.id, title: q2.title, author: author}
     ]
 
-    assert expected == Q.get_all_questions()
+    assert {:ok, expected} == Q.get_all_questions()
   end
 end

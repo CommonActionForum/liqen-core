@@ -16,7 +16,7 @@ defmodule Core.Q do
 
   - get_all_XXX()
 
-    Gets all objects. Returns a list of objects
+    Gets all objects. Returns {:ok, list}
 
   - create_XXX(author, params)
 
@@ -62,12 +62,12 @@ defmodule Core.Q do
 
   def get_all_questions do
     questions = Repo.all(Question)
-
-    questions
     |> Enum.map(fn question -> {:ok, question} end)
     |> Enum.map(&set_question_author/1)
     |> Enum.map(&take/1)
     |> Enum.map(fn {:ok, question} -> question end)
+
+    {:ok, questions}
   end
 
   def get_all_annotations do
@@ -78,11 +78,11 @@ defmodule Core.Q do
 
   def get_all_tags do
     tags = Repo.all(Tag)
-
-    tags
     |> Enum.map(fn question -> {:ok, question} end)
     |> Enum.map(&take/1)
     |> Enum.map(fn {:ok, question} -> question end)
+
+    {:ok, tags}
   end
 
   def create_question(author, params) do

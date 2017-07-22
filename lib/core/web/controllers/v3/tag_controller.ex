@@ -6,7 +6,7 @@ defmodule Core.Web.V3.TagController do
   action_fallback Core.Web.FallbackController
 
   def index(conn, _params) do
-    tags = Q.get_all_tags()
+    {:ok, tags} = Q.get_all_tags()
     json(conn, tags)
   end
 
