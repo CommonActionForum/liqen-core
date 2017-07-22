@@ -43,13 +43,12 @@ defmodule Core.QTest do
     # l1 = insert_liqen([a1, a2])
     # l2 = insert_liqen([a3, a4, a5])
 
-    {:ok, %{# questions: [q1, q2],
-        # annotations: [a1, a2, a3, a4, a5],
-        tags: [t1, t2, t3, t4, t5],
-        #liqens: [l1, l2],
-        user: user,
-        root: root
-     }}
+    {:ok, %{questions: [q1, q2],
+            # annotations: [a1, a2, a3, a4, a5],
+            tags: [t1, t2, t3, t4, t5],
+            #liqens: [l1, l2],
+            user: user,
+            root: root}}
   end
 
   # test "Get Question", %{questions: [q1, q2]} do
@@ -140,5 +139,25 @@ defmodule Core.QTest do
 
   test "Delete tag included in a question", %{root: root, tags: [_, t2, _, _, _]} do
     assert {:error, :bad_request, _} = Q.delete_tag(root, t2.id)
+  end
+
+  test "Get existing Question", %{questions: [q1, _]} do
+    expected = %{id: q1.id,
+                 title: q1.title}
+
+    assert {:ok, expected} == Q.get_question(q1.id)
+  end
+
+  test "Get non-existing Question", %{} do
+    assert {:error, :not_found} == Q.get_question(0)
+  end
+
+  test "Get all questions", %{questions: [q1, q2]} do
+    expected = [
+      %{id: q1.id, title: q1.title},
+      %{id: q2.id, title: q2.title}
+    ]
+
+    assert expected == Q.get_all_questions()
   end
 end
