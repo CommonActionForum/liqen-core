@@ -174,7 +174,8 @@ defmodule Core.Q do
   end
 
   defp get_all(struct) do
-    Repo.all(struct)
+    struct
+    |> Repo.all()
     |> Enum.map(fn obj -> {:ok, obj} end)
   end
 
