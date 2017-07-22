@@ -5,7 +5,7 @@ defmodule Core.Accounts do
   def get_user(id) do
     case Repo.get(User, id) do
       %User{} = user ->
-        {:ok, user}
+        {:ok, Map.take(user, [:id, :name])}
       _ ->
         {:error, :not_found}
     end
