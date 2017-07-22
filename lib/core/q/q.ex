@@ -38,8 +38,12 @@ defmodule Core.Q do
   alias Core.Repo
   alias Core.Permissions
   alias Core.Q.Tag
+  alias Core.Q.Question
 
   def get_question(id) do
+    with {:ok, question} <- get(Question, id) do
+      take({:ok, question})
+    end
   end
 
   def get_annotation(id) do
@@ -55,6 +59,10 @@ defmodule Core.Q do
   end
 
   def get_all_questions do
+    questions = Repo.all(Question)
+
+    questions
+    |> Enum.map(fn question -> Map.take(question, [:id, :title]) end)
   end
 
   def get_all_annotations do
@@ -162,6 +170,10 @@ defmodule Core.Q do
 
   defp take({:ok, %Tag{} = tag}) do
     {:ok, Map.take(tag, [:id, :title])}
+  end
+
+  defp take({:ok, %Question{} = question}) do
+    {:ok, Map.take(question, [:id, :title])}
   end
   # defp take(any), do: any
 end
