@@ -107,7 +107,7 @@ defmodule Core.QTest do
     assert {:ok, expected} == Q.update_tag(root, t1.id, %{title: "Tagg", id: 89})
   end
 
-  test "Update not found", %{root: root, tags: [t1, _, _, _, _]} do
+  test "Update not found", %{root: root} do
     assert {:error, :not_found} = Q.update_tag(root, 0, %{})
   end
 
@@ -126,7 +126,7 @@ defmodule Core.QTest do
     expected = %{title: t1.title,
                  id: t1.id}
 
-    assert {:ok, expected} = Q.delete_tag(root, t1.id)
+    assert {:ok, expected} == Q.delete_tag(root, t1.id)
   end
 
   test "Delete tag without permissions", %{user: user, tags: [t1, _, _, _, _]} do
