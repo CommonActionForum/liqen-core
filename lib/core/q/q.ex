@@ -42,10 +42,10 @@ defmodule Core.Q do
   alias Core.Q.Question
 
   def get_question(id) do
-    with {:ok, question} <- get(Question, id) do
-      question = set_question_author(question)
-      take({:ok, question})
-    end
+    id
+    |> get(Question)
+    |> set_question_author()
+    |> take()
   end
 
   def get_annotation(id) do
@@ -55,17 +55,19 @@ defmodule Core.Q do
   end
 
   def get_tag(id) do
-    with {:ok, tag} <- get(Tag, id) do
-      take({:ok, tag})
-    end
+    id
+    |> get(Tag)
+    |> take()
   end
 
   def get_all_questions do
     questions = Repo.all(Question)
 
     questions
+    |> Enum.map(fn question -> {:ok, question} end)
     |> Enum.map(&set_question_author/1)
-    |> Enum.map(fn question -> Map.take(question, [:id, :title, :author]) end)
+    |> Enum.map(&take/1)
+    |> Enum.map(fn {:ok, question} -> question end)
   end
 
   def get_all_annotations do
@@ -78,7 +80,9 @@ defmodule Core.Q do
     tags = Repo.all(Tag)
 
     tags
-    |> Enum.map(fn tag -> Map.take(tag, [:id, :title]) end)
+    |> Enum.map(fn question -> {:ok, question} end)
+    |> Enum.map(&take/1)
+    |> Enum.map(fn {:ok, question} -> question end)
   end
 
   def create_question(author, params) do
@@ -96,7 +100,9 @@ defmodule Core.Q do
          {:ok, changeset} <-
            create_tag_changeset(%Tag{}, params)
     do
-      take(Repo.insert(changeset))
+      changeset
+      |> Repo.insert()
+      |> take()
     end
   end
 
@@ -111,12 +117,14 @@ defmodule Core.Q do
 
   def update_tag(author, id, params) do
     with {:ok, tag} <-
-           get(Tag, id),
+           get(id, Tag),
          {:ok, _} <-
            Permissions.check_permissions(author, "update", "tags", tag)
     do
       {:ok, changeset} = create_tag_changeset(tag, params)
-      take(Repo.update(changeset))
+      changeset
+      |> Repo.update()
+      |> take()
     end
   end
 
@@ -131,7 +139,7 @@ defmodule Core.Q do
 
   def delete_tag(author, id) do
     with {:ok, tag} <-
-           get(Tag, id),
+           get(id, Tag),
          {:ok, _} <-
            Permissions.check_permissions(author, "delete", "tags", tag)
     do
@@ -162,7 +170,7 @@ defmodule Core.Q do
     end
   end
 
-  defp get(struct, id) do
+  defp get(id, struct) do
     case Repo.get(struct, id) do
       obj = %struct{} ->
         {:ok, obj}
@@ -178,10 +186,11 @@ defmodule Core.Q do
   defp take({:ok, %Question{} = question}) do
     {:ok, Map.take(question, [:id, :title, :author])}
   end
-  # defp take(any), do: any
+  defp take(any), do: any
 
-  defp set_question_author(question) do
+  defp set_question_author({:ok, %Question{} = question}) do
     {:ok, author} = Accounts.get_user(question.author_id)
-    Map.put(question, :author, author)
+    {:ok, Map.put(question, :author, author)}
   end
+  defp set_question_author(any), do: any
 end
