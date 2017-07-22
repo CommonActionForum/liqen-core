@@ -37,11 +37,13 @@ defmodule Core.Q do
   use Core.Web, :model
   alias Core.Repo
   alias Core.Permissions
+  alias Core.Accounts
   alias Core.Q.Tag
   alias Core.Q.Question
 
   def get_question(id) do
     with {:ok, question} <- get(Question, id) do
+      question = set_question_author(question)
       take({:ok, question})
     end
   end
@@ -62,7 +64,8 @@ defmodule Core.Q do
     questions = Repo.all(Question)
 
     questions
-    |> Enum.map(fn question -> Map.take(question, [:id, :title]) end)
+    |> Enum.map(&set_question_author/1)
+    |> Enum.map(fn question -> Map.take(question, [:id, :title, :author]) end)
   end
 
   def get_all_annotations do
@@ -173,7 +176,12 @@ defmodule Core.Q do
   end
 
   defp take({:ok, %Question{} = question}) do
-    {:ok, Map.take(question, [:id, :title])}
+    {:ok, Map.take(question, [:id, :title, :author])}
   end
   # defp take(any), do: any
+
+  defp set_question_author(question) do
+    {:ok, author} = Accounts.get_user(question.author_id)
+    Map.put(question, :author, author)
+  end
 end
