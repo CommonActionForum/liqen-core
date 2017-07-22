@@ -61,13 +61,10 @@ defmodule Core.Q do
   end
 
   def get_all_questions do
-    questions = Repo.all(Question)
-    |> Enum.map(fn question -> {:ok, question} end)
+    Question
+    |> get_all()
     |> Enum.map(&set_question_author/1)
-    |> Enum.map(&take/1)
-    |> Enum.map(fn {:ok, question} -> question end)
-
-    {:ok, questions}
+    |> take()
   end
 
   def get_all_annotations do
@@ -77,12 +74,9 @@ defmodule Core.Q do
   end
 
   def get_all_tags do
-    tags = Repo.all(Tag)
-    |> Enum.map(fn question -> {:ok, question} end)
-    |> Enum.map(&take/1)
-    |> Enum.map(fn {:ok, question} -> question end)
-
-    {:ok, tags}
+    Tag
+    |> get_all()
+    |> take()
   end
 
   def create_question(author, params) do
@@ -177,6 +171,21 @@ defmodule Core.Q do
       _ ->
         {:error, :not_found}
     end
+  end
+
+  defp get_all(struct) do
+    Repo.all(struct)
+    |> Enum.map(fn obj -> {:ok, obj} end)
+  end
+
+  defp take(list) when is_list(list) do
+    list =
+      list
+      |> Enum.map(&take/1)
+      # We are assuming that every object in "list" is now a {:ok, obj} tuple
+      |> Enum.map(fn {:ok, obj} -> obj end)
+
+    {:ok, list}
   end
 
   defp take({:ok, %Tag{} = tag}) do
