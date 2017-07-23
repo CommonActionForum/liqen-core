@@ -40,11 +40,13 @@ defmodule Core.Q do
   alias Core.Accounts
   alias Core.Q.Tag
   alias Core.Q.Question
+  alias Core.Q.QuestionTag
 
   def get_question(id) do
     id
     |> get(Question)
     |> set_question_author()
+    |> set_question_tags()
     |> take()
   end
 
@@ -219,7 +221,7 @@ defmodule Core.Q do
   end
 
   defp take({:ok, %Question{} = question}) do
-    {:ok, Map.take(question, [:id, :title, :author])}
+    {:ok, Map.take(question, [:id, :title, :author, :required_tags, :optional_tags])}
   end
   defp take(any), do: any
 
@@ -228,4 +230,32 @@ defmodule Core.Q do
     {:ok, Map.put(question, :author, author)}
   end
   defp set_question_author(any), do: any
+
+  defp set_question_tags({:ok, %Question{} = question}) do
+    query = from t in QuestionTag, where: t.question_id == ^question.id
+    tags =
+      query
+      |> Repo.all()
+      |> Repo.preload(:tag)
+      |> Enum.map(fn qt -> %{required: qt.required, tag: qt.tag} end)
+
+    {:ok, required_tags} =
+      tags
+      |> Enum.filter(fn qt -> qt.required end)
+      |> Enum.map(fn qt -> {:ok, qt.tag} end)
+      |> take()
+
+    {:ok, optional_tags} =
+      tags
+      |> Enum.filter(fn qt -> !qt.required end)
+      |> Enum.map(fn qt -> {:ok, qt.tag} end)
+      |> take()
+
+    question_with_tags =
+      question
+      |> Map.put(:required_tags, required_tags)
+      |> Map.put(:optional_tags, optional_tags)
+
+    {:ok, question_with_tags}
+  end
 end
