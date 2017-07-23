@@ -177,11 +177,11 @@ defmodule Core.QTest do
         name: root.name
       },
       required_tags: [
-        %{id: t1.id, name: t1.name},
-        %{id: t2.id, name: t2.name}
+        %{id: t1.id, title: t1.title},
+        %{id: t2.id, title: t2.title}
       ],
       optional_tags: [
-        %{id: t3.id, name: t3.name}
+        %{id: t3.id, title: t3.title}
       ]
     }
   end
