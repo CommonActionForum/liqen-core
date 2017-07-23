@@ -80,6 +80,19 @@ defmodule Core.Q do
   end
 
   def create_question(author, params) do
+    with {:ok, _} <-
+           Permissions.check_permissions(author, "create", "question"),
+         {:ok, changeset} <-
+           question_changeset(
+             %Question{},
+             Map.put(params, :author_id, author.id)
+           )
+    do
+      changeset
+      |> Repo.insert()
+      |> set_question_author()
+      |> take()
+    end
   end
 
   def create_annotation(author, params) do
@@ -157,6 +170,18 @@ defmodule Core.Q do
         :id,
         name: "questions_tags_tag_id_fkey"
       )
+
+    case changeset do
+      %{valid?: true} -> {:ok, changeset}
+      _ -> {:error, changeset}
+    end
+  end
+
+  defp question_changeset(struct, params) do
+    changeset =
+      struct
+      |> cast(params, [:title, :author_id])
+      |> validate_required([:title, :author_id])
 
     case changeset do
       %{valid?: true} -> {:ok, changeset}
