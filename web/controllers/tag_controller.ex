@@ -16,6 +16,9 @@ defmodule Core.TagController do
 
     case Repo.insert(changeset) do
       {:ok, tag} ->
+        tag = tag
+        |> Repo.preload(:concepts)
+
         conn
         |> put_status(:created)
         |> put_resp_header("location", tag_path(conn, :show, tag))
@@ -37,6 +40,8 @@ defmodule Core.TagController do
 
   def update(conn, tag_params) do
     tag = conn.assigns[:tag]
+    |> Repo.preload(:concepts)
+
     changeset = Tag.changeset(tag, tag_params)
 
     case Repo.update(changeset) do
