@@ -141,11 +141,19 @@ defmodule Core.QTest do
     assert {:error, :bad_request, _} = Q.delete_tag(root, t2.id)
   end
 
-  test "Get existing Question", %{questions: [q1, _], root: root} do
+  test "Get existing Question", %{questions: [q1, _], root: root, tags: [_, t2, t3, t4, t5]} do
     expected = %{id: q1.id,
                  title: q1.title,
                  author: %{id: root.id,
-                           name: root.name}}
+                           name: root.name},
+                 required_tags: [
+                   %{id: t2.id, title: t2.title},
+                   %{id: t3.id, title: t3.title}
+                 ],
+                 optional_tags: [
+                   %{id: t4.id, title: t4.title},
+                   %{id: t5.id, title: t5.title}
+                 ]}
 
     assert {:ok, expected} == Q.get_question(q1.id)
   end
