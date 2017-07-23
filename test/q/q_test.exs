@@ -163,4 +163,34 @@ defmodule Core.QTest do
 
     assert {:ok, expected} == Q.get_all_questions()
   end
+
+  test "Create Question", %{root: root, tags: [t1, t2, t3, _, _]} do
+    {:ok, q} = Q.create_question(root, %{title: "Question",
+                                         required_tags: [t1.id, t2.id],
+                                         optional_tags: [t3.id]})
+
+    assert q == %{
+      id: q.id,
+      title: "Question",
+      author: %{
+        id: root.id,
+        name: root.name
+      },
+      required_tags: [
+        %{id: t1.id, name: t1.name},
+        %{id: t2.id, name: t2.name}
+      ],
+      optional_tags: [
+        %{id: t3.id, name: t3.name}
+      ]
+    }
+  end
+
+  test "Create non-valid question", %{root: root} do
+    assert {:error, %Ecto.Changeset{}} = Q.create_tag(root, %{})
+  end
+
+  test "Create question without permissions", %{user: user} do
+    assert {:error, :forbidden} = Q.create_tag(user, %{title: "Tag"})
+  end
 end
