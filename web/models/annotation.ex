@@ -19,6 +19,7 @@ defmodule Core.Annotation do
   schema "annotations" do
     field :target, Core.Target
 
+    belongs_to :concept, Core.Concept
     belongs_to :article, Core.Article
     belongs_to :user, Core.User, foreign_key: :author
 
@@ -41,9 +42,10 @@ defmodule Core.Annotation do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:article_id, :target, :tags])
+    |> cast(params, [:article_id, :target, :tags, :concept_id])
     |> validate_required([:article_id, :target, :tags])
     |> foreign_key_constraint(:article_id)
+    |> foreign_key_constraint(:concept_id)
   end
 
   @doc """
