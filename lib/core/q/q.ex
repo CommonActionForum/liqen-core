@@ -206,16 +206,7 @@ defmodule Core.Q do
     |> Enum.map(fn obj -> {:ok, obj} end)
   end
 
-  defp take(list) when is_list(list) do
-    list =
-      list
-      |> Enum.map(&take/1)
-      # We are assuming that every object in "list" is now a {:ok, obj} tuple
-      |> Enum.map(fn {:ok, obj} -> obj end)
-
-    {:ok, list}
-  end
-
+  defp take(object, options \\ [summary: false])
   defp take(list, options) when is_list(list) do
     list =
       list
@@ -226,17 +217,22 @@ defmodule Core.Q do
     {:ok, list}
   end
 
-  defp take({:ok, %Tag{} = tag}) do
+  defp take({:ok, %Tag{} = tag}, _) do
     {:ok, Map.take(tag, [:id, :title])}
   end
 
-  defp take({:ok, %Question{} = question}) do
-    {:ok, Map.take(question, [:id, :title, :author, :required_tags, :optional_tags])}
-  end
   defp take({:ok, %Question{} = question}, options) do
-    {:ok, Map.take(question, [:id, :title, :author])}
+    fields =
+      case Keyword.get(options, :summary) do
+        true ->
+          [:id, :title, :author]
+        false ->
+          [:id, :title, :author, :required_tags, :optional_tags]
+      end
+
+    {:ok, Map.take(question, fields)}
   end
-  defp take(any), do: any
+  defp take(any, _), do: any
 
   defp set_question_author({:ok, %Question{} = question}) do
     {:ok, author} = Accounts.get_user(question.author_id)
