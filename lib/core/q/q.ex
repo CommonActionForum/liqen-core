@@ -66,7 +66,7 @@ defmodule Core.Q do
     Question
     |> get_all()
     |> Enum.map(&set_question_author/1)
-    |> take()
+    |> take(summary: true)
   end
 
   def get_all_annotations do
@@ -216,12 +216,25 @@ defmodule Core.Q do
     {:ok, list}
   end
 
+  defp take(list, options) when is_list(list) do
+    list =
+      list
+      |> Enum.map(&take(&1, options))
+      # We are assuming that every object in "list" is now a {:ok, obj} tuple
+      |> Enum.map(fn {:ok, obj} -> obj end)
+
+    {:ok, list}
+  end
+
   defp take({:ok, %Tag{} = tag}) do
     {:ok, Map.take(tag, [:id, :title])}
   end
 
   defp take({:ok, %Question{} = question}) do
     {:ok, Map.take(question, [:id, :title, :author, :required_tags, :optional_tags])}
+  end
+  defp take({:ok, %Question{} = question}, options) do
+    {:ok, Map.take(question, [:id, :title, :author])}
   end
   defp take(any), do: any
 
