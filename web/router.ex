@@ -25,6 +25,7 @@ defmodule Core.Router do
     resources "/annotations", AnnotationController, except: [:new, :edit]
     resources "/questions", QuestionController, except: [:new, :edit]
     resources "/liqens", FactController, except: [:new, :edit]
+    resources "/concepts", ConceptController, except: [:new, :edit]
 
     #    scope "/v3", V3, as: :v3 do
     #      resources "/annotations", TagController, except: [:new, :edit]
