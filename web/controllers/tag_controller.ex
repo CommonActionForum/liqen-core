@@ -28,7 +28,10 @@ defmodule Core.TagController do
   end
 
   def show(conn, _) do
-    tag = conn.assigns[:tag]
+    tag =
+      conn.assigns[:tag]
+      |> Repo.preload(:concepts)
+
     render(conn, "show.json", tag: tag)
   end
 
