@@ -258,4 +258,5 @@ defmodule Core.Q do
 
     {:ok, question_with_tags}
   end
+  defp set_question_tags(any), do: any
 end
