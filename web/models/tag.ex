@@ -6,6 +6,7 @@ defmodule Core.Tag do
 
     many_to_many :annotations, Core.Annotation, join_through: Core.AnnotationTag
     many_to_many :questions, Core.Question, join_through: Core.QuestionTag
+    many_to_many :concepts, Core.Concept, join_through: Core.TagConcept
 
     timestamps()
   end

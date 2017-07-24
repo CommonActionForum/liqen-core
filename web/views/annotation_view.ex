@@ -25,6 +25,7 @@ defmodule Core.AnnotationView do
       article_id: annotation.article_id,
       author: annotation.author,
       target: annotation.target,
+      concept: annotation.concept_id,
       tags: tags}
   end
 end

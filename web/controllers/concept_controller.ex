@@ -1,28 +1,26 @@
-defmodule Core.TagController do
+defmodule Core.ConceptController do
   use Core.Web, :controller
-  alias Core.Tag
+  alias Core.Concept
 
   plug :find when action in [:update, :delete, :show]
-  plug Core.Auth, %{key: :tag,
-                    type: "tags"} when action in [:create, :update, :delete]
+  plug Core.Auth, %{key: :concept, type: "concepts"}
+  when action in [:create, :update, :delete]
 
   def index(conn, _params) do
-    tags = Repo.all(Tag)
-    render(conn, "index.json", tags: tags)
+    concepts = Repo.all(Concept)
+    render(conn, "index.json", concepts: concepts)
   end
 
-  def create(conn, tag_params) do
-    changeset = Tag.changeset(%Tag{}, tag_params)
+  def create(conn, concept_params) do
+    changeset = Concept.changeset(%Concept{}, concept_params)
 
     case Repo.insert(changeset) do
-      {:ok, tag} ->
-        tag = tag
-        |> Repo.preload(:concepts)
-
+      {:ok, concept} ->
         conn
         |> put_status(:created)
-        |> put_resp_header("location", tag_path(conn, :show, tag))
-        |> render("show.json", tag: tag)
+        |> put_resp_header("location", concept_path(conn, :show, concept))
+        |> render("show.json", concept: concept)
+
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -31,22 +29,18 @@ defmodule Core.TagController do
   end
 
   def show(conn, _) do
-    tag =
-      conn.assigns[:tag]
-      |> Repo.preload(:concepts)
-
-    render(conn, "show.json", tag: tag)
+    concept = conn.assigns.concept
+    render(conn, "show.json", concept: concept)
   end
 
-  def update(conn, tag_params) do
-    tag = conn.assigns[:tag]
-    |> Repo.preload(:concepts)
-
-    changeset = Tag.changeset(tag, tag_params)
+  def update(conn, concept_params) do
+    concept = conn.assigns.concept
+    changeset = Concept.changeset(concept, concept_params)
 
     case Repo.update(changeset) do
-      {:ok, tag} ->
-        render(conn, "show.json", tag: tag)
+      {:ok, concept} ->
+        render(conn, "show.json", concept: concept)
+
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -55,25 +49,26 @@ defmodule Core.TagController do
   end
 
   def delete(conn, _) do
-    tag = conn.assigns[:tag]
+    concept = conn.assigns.concept
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
-    Repo.delete!(tag)
+    Repo.delete!(concept)
 
     send_resp(conn, :no_content, "")
   end
 
   defp find(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
-    case Repo.get(Tag, id) do
+    case Repo.get(Concept, id) do
       nil ->
         conn
         |> put_status(:not_found)
         |> render(Core.ErrorView, "404.json", %{})
         |> halt()
-      tag ->
+
+      concept ->
         conn
-        |> assign(:tag, tag)
+        |> assign(:concept, concept)
     end
   end
 end
