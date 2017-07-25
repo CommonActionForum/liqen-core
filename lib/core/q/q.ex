@@ -180,10 +180,21 @@ defmodule Core.Q do
   end
 
   defp question_changeset(struct, params) do
+    not_included_in = fn (list) ->
+      fn (item) ->
+        case Enum.find(params[list], nil, fn (x) -> x == item end) do
+          nil -> true
+          _ -> "The tag #{item} cannot be included in both lists"
+        end
+      end
+    end
+
     changeset =
       struct
-      |> cast(params, [:title, :author_id])
-      |> validate_required([:title, :author_id])
+      |> cast(params, [:title, :author_id, :required_tags, :optional_tags])
+      |> validate_required([:title, :author_id, :required_tags, :optional_tags])
+      |> validate_list(:required_tags, not_included_in.(:optional_tags))
+      |> validate_list(:optional_tags, not_included_in.(:required_tags))
 
     case changeset do
       %{valid?: true} -> {:ok, changeset}
@@ -268,4 +279,32 @@ defmodule Core.Q do
     {:ok, question_with_tags}
   end
   defp set_question_tags(any), do: any
+
+  # validator is a function that receives values
+  # and returns true or a string with an error
+  defp validate_list(changeset, field, validator) do
+    %{changes: changes, errors: errors} = changeset
+    ensure_field_exists!(changeset, field)
+
+    list = Map.get(changes, field)
+    indexed_list = Enum.zip(0..Enum.count(list), list)
+    new_errors =
+      indexed_list
+      |> Enum.map(fn({index, element}) -> {index, validator.(element)} end)
+      |> Enum.filter(fn({index, string}) -> string != true end)
+      |> Enum.map(fn({index, string}) -> {"#{field}[#{index}]", {string, []}} end)
+
+    case new_errors do
+      [] -> changeset
+      _ -> %{changeset | errors: new_errors ++ errors, valid?: false}
+    end
+  end
+
+  # Mimmics Ecto.Changeset.ensure_field_exists!
+  defp ensure_field_exists!(%Ecto.Changeset{types: types, data: data}, field) do
+    unless Map.has_key?(types, field) do
+      raise ArgumentError, "unknown field #{inspect field} for changeset on #{inspect data}"
+    end
+    true
+  end
 end
