@@ -194,8 +194,30 @@ defmodule Core.QTest do
     }
   end
 
-  test "Create non-valid question", %{root: root} do
+  test "Create non-valid question (no title present)", %{root: root} do
     assert {:error, %Ecto.Changeset{}} = Q.create_tag(root, %{})
+  end
+
+  test "Create non-valid question (tags repeated)", %{root: root, tags: [t1, t2, t3, _, _]} do
+    {:error, %Ecto.Changeset{}} = Q.create_question(
+      root,
+      %{
+        title: "Question",
+        required_tags: [t1.id, t2.id],
+        optional_tags: [t1.id, t3.id]
+      }
+    )
+  end
+
+  test "Create non-valid question (non-existing tags)", %{root: root, tags: [t1, t2, _,  _, _]} do
+    {:error, %Ecto.Changeset{}} = Q.create_question(
+      root,
+      %{
+        title: "Question",
+        required_tags: [t1.id, 0],
+        optional_tags: [t2.id, 0]
+      }
+    )
   end
 
   test "Create question without permissions", %{user: user} do
